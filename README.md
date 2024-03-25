@@ -7,7 +7,9 @@
 
 ## Description.
 
-Beyond plasmasnow there is ... plasmastorm !
+Beyond plasmasnow there is ... plasmastorm ! An hypnotic display
+of falling, drifting, and blowing storm items to capture your
+imagination.
 &nbsp;
 
 Storms of drifting items: snow, leaves, rain, bubbles & more!
