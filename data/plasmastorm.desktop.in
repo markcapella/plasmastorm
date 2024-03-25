@@ -1,0 +1,24 @@
+[Desktop Entry]
+Name=plasmastorm
+Comment=Stormy Drifting Scenes
+
+Type=Application
+Version=4.2
+
+Exec=plasmastorm
+Icon=plasmastormicon.png
+Terminal=false
+StartupNotify=true
+
+Categories=Game;
+Keywords=Storm; Snow;
+
+Actions=start;nomenu;
+
+[Desktop Action start]
+Name=Start plasmastorm
+Exec=plasmastorm
+
+[Desktop Action nomenu]
+Name=Start without menu
+Exec=plasmastorm -hidemenu

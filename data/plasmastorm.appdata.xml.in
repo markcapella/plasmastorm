@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>plasmastorm.desktop</id>
+  <metadata_license>gpl-3+</metadata_license>
+  <name>plasmastorm</name>
+  <summary>Let it snow on your desktop.</summary>
+  <description>
+    <p>
+       plasmastorm creates on your desktop:
+       <ul>
+       <li> Snow </li>
+    </ul>
+    </p>
+    <p>
+       Preferences can be set with the comprehensive graphical interface.
+    </p>
+    <p>
+       plasmastorm can also be used in combination with XScreenSaver.
+    </p>
+  </description>
+
+  <keywords>
+    <keyword>Storm</keyword>
+    <keyword>Snow</keyword>
+  </keywords>
+
+  <url type="homepage">https://github.com/markcapella/plasmastorm</url>
+  <url type="bugtracker">https://github.com/markcapella/plasmastorm/issues/</url>
+  <provides>
+    <binary>plasmastorm</binary>
+  </provides>
+  <releases>
+    <release version="plasmastorm_VERSION" date="plasmastorm_DATE"/>
+  </releases>
+  <screenshots>
+    <screenshot type="default">
+       <image>https://github.com/markcapella/plasmastorm/blob/main/assets/images/screenshot.png</image>
+    </screenshot>
+  </screenshots>
+  <project_license>gpl-3+</project_license>
+  <developer_name>Mark Capella</developer_name>
+  <update_contact>markcapella@twcny.rr.com</update_contact>
+</component>
+

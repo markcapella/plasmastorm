@@ -1,0 +1,2109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<!-- -copyright-
+#-# 
+#-# plasmastorm: Storms of drifting items: snow, leaves, rain.
+#-# 
+#-# Copyright (C) 2024 Mark Capella
+#-#
+#-# This program is free software: you can redistribute it and/or modify
+#-# it under the terms of the GNU General Public License as published by
+#-# the Free Software Foundation, either version 3 of the License, or
+#-# (at your option) any later version.
+#-# 
+#-# This program is distributed in the hope that it will be useful,
+#-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+#-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#-# GNU General Public License for more details.
+#-# 
+#-# You should have received a copy of the GNU General Public License
+#-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#-# 
+-->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkAdjustment" id="blowoff-strength-adjustment">
+    <property name="lower">10</property>
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="cpuload-adjustment">
+    <property name="lower">20</property>
+    <property name="upper">300</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="desktop-depth-adjustment">
+    <property name="lower">2</property>
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="desktop-lift-adjustment">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="general-transparency-adjustment">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="max-star-count-adjustment">
+    <property name="lower">10</property>
+    <property name="upper">300</property>
+    <property name="value">300</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="scale-adjustment">
+    <property name="lower">30</property>
+    <property name="upper">300</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="shapeSize-adjustment">
+    <property name="lower">2</property>
+    <property name="upper">20</property>
+    <property name="value">8</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">5</property>
+  </object>
+  <object class="GtkAdjustment" id="storm-saturation-adjustment">
+    <property name="lower">1</property>
+    <property name="upper">300</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="storm-speed-adjustment">
+    <property name="lower">10</property>
+    <property name="upper">300</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="stormItem-count-max-adjustment">
+    <property name="lower">10</property>
+    <property name="upper">1000</property>
+    <property name="value">500</property>
+    <property name="step-increment">10</property>
+    <property name="page-increment">100</property>
+  </object>
+  <object class="GtkAdjustment" id="whirl-adjustment">
+    <property name="upper">300</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="wind-timer-adjustment">
+    <property name="lower">3</property>
+    <property name="upper">50</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="windows-depth-adjustment">
+    <property name="lower">2</property>
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="windows-lift-adjustment">
+    <property name="lower">-20</property>
+    <property name="upper">100</property>
+    <property name="value">-20</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkApplicationWindow" id="id-MainWindow">
+    <property name="can-focus">False</property>
+    <property name="halign">center</property>
+    <property name="valign">center</property>
+    <property name="resizable">False</property>
+    <property name="window-position">center</property>
+    <signal name="destroy" handler="onClickedQuitApplication" swapped="no"/>
+    <child>
+      <object class="GtkStack" id="stack">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="hhomogeneous">False</property>
+        <property name="vhomogeneous">False</property>
+        <property name="transition-duration">0</property>
+        <child>
+          <!-- n-columns=5 n-rows=9 -->
+          <object class="GtkGrid" id="grid_about">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <child>
+              <!-- n-columns=1 n-rows=3 -->
+              <object class="GtkGrid" id="header-about">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkButton" id="all-defaults">
+                    <property name="label" translatable="yes">All Defaults</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <property name="relief">half</property>
+                    <signal name="clicked" handler="onClickedSetAllDefaults" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="height-request">8</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">30</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="double-buffered">False</property>
+                    <property name="label" translatable="yes">About</property>
+                    <property name="width-chars">96</property>
+                    <attributes>
+                      <attribute name="scale" value="1.5"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=1 n-rows=5 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">by Mark James Capella</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="id-version">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">&amp;VERSION-LABEL</property>
+                    <property name="justify">center</property>
+                    <property name="track-visited-links">False</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">https://github.com/markcapella/plasmastorm</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="label" translatable="yes">    markcapella@twcny.rr.com</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="use-markup">True</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="id-plasmastormLogo">
+                <property name="width-request">256</property>
+                <property name="height-request">256</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="stock">gtk-about</property>
+                <property name="use-fallback">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">plasmaSnow 13.32 is derived from Willem Vermin's : xSnow 3.7.5.</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">xSnow 3.7.5 is derived from Rick Jansen's xsnow-1.42.</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">plasmaStorm is derived from plasmasnow 13.32.</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="name">pageAbout</property>
+            <property name="title" translatable="yes">About</property>
+          </packing>
+        </child>
+        <child>
+          <!-- n-columns=5 n-rows=14 -->
+          <object class="GtkGrid" id="grid_storms">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <child>
+              <!-- n-columns=1 n-rows=3 -->
+              <object class="GtkGrid" id="header-storms">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkButton" id="storms-defaults">
+                    <property name="label" translatable="yes">Defaults</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.
+</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <signal name="clicked" handler="onClickedSetStormDefaults" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="height-request">8</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">30</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Storm Settings</property>
+                    <property name="justify">center</property>
+                    <property name="width-chars">96</property>
+                    <property name="single-line-mode">True</property>
+                    <attributes>
+                      <attribute name="scale" value="1.5"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-ShowStormItems">
+                <property name="label" translatable="yes">Show Storm</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">If set, show storm items.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="margin-bottom">5</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-StormItemColor1">
+                <property name="label">     </property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Storm Item color 1 of 2.</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                <property name="margin-left">40</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-StormItemColor2">
+                <property name="label">     </property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Storm Item color 2 of 2.</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="margin-right">40</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-StormItemCountMax">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Maximum amount of storm items.</property>
+                <property name="double-buffered">False</property>
+                <property name="adjustment">stormItem-count-max-adjustment</property>
+                <property name="round-digits">0</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+                <style>
+                  <class name="cpuload"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">7</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-ShapeSizeFactor">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Size of storm items.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">shapeSize-adjustment</property>
+                <property name="round-digits">0</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+                <style>
+                  <class name="sizeSlider"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">2</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-StormSaturationFactor">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">The higher, the more storm items.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">storm-saturation-adjustment</property>
+                <property name="round-digits">0</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+                <style>
+                  <class name="cpuload"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">8</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="margin-bottom">8</property>
+                <property name="label" translatable="yes">Max # Storm Items:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Size:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Saturation:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-ShowStars">
+                <property name="label" translatable="yes">Show Stars</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">If set, show stars.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="margin-bottom">2</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">11</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="margin-bottom">8</property>
+                <property name="label" translatable="yes">Max # Stars:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">11</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-MaxStarCount">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Maximum amount of storm items.</property>
+                <property name="double-buffered">False</property>
+                <property name="adjustment">max-star-count-adjustment</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+                <style>
+                  <class name="cpuload"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">11</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">12</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">13</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="id-ComboStormShape">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Choose falling Storm Shape.</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="margin-bottom">7</property>
+                <property name="active">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Speed:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-StormItemSpeedFactor">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Speed of the storm items.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">storm-speed-adjustment</property>
+                <property name="round-digits">0</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">3</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="name">pageStorms</property>
+            <property name="title" translatable="yes">Storms</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <!-- n-columns=5 n-rows=6 -->
+          <object class="GtkGrid" id="grid_wind">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <child>
+              <!-- n-columns=1 n-rows=3 -->
+              <object class="GtkGrid" id="header-wind">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkButton" id="wind-defaults">
+                    <property name="label" translatable="yes">Defaults</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.
+</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <signal name="clicked" handler="onClickedSetWindDefaults" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="height-request">8</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">30</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Wind Settings</property>
+                    <property name="justify">center</property>
+                    <property name="width-chars">96</property>
+                    <property name="single-line-mode">True</property>
+                    <attributes>
+                      <attribute name="scale" value="1.5"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-ShowWind">
+                <property name="label" translatable="yes">Enable Wind</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">If set, there will be wind.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Whirl Strength:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="margin-right">10</property>
+                <property name="margin-top">8</property>
+                <property name="label" translatable="yes">Delay each Whirl:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-WhirlFactor">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more the wind will whirl.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">whirl-adjustment</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">2</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-WhirlTimer">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">This setting determines how many seconds pass between  two  gusts of wind.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">wind-timer-adjustment</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">3</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="name">pageWind</property>
+            <property name="title" translatable="yes">Wind</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <!-- n-columns=5 n-rows=13 -->
+          <object class="GtkGrid" id="grid_fallen">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <child>
+              <!-- n-columns=1 n-rows=3 -->
+              <object class="GtkGrid" id="header-fallen">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkButton" id="leaf-defaults">
+                    <property name="label" translatable="yes">Defaults</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.
+</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <signal name="clicked" handler="onClickedSetFallenDefaults" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Fallen Storm Item Settings</property>
+                    <property name="justify">center</property>
+                    <property name="width-chars">96</property>
+                    <property name="single-line-mode">True</property>
+                    <attributes>
+                      <attribute name="scale" value="1.5"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="height-request">8</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">30</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-KeepFallenOnWindows">
+                <property name="label" translatable="yes">Show on Windows</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">If set, show fallen on windows.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-KeepFallenOnDesktop">
+                <property name="label" translatable="yes">Show on Desktop</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">If set, show fallen on bottom of desktop.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-ShowBlowoff">
+                <property name="label" translatable="yes">Show Blowing Off</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">If set, show storm items blowing away.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Height above Windows:</property>
+                <property name="single-line-mode">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Lift  above Windows:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-MaxWindowFallenDepth">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more storm items will collect on the windows.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">windows-depth-adjustment</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">2</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-WindowFallenTopOffset">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Adjust this is storm items collect separated from your windows.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">windows-lift-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">3</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Height above Desktop:</property>
+                <property name="max-width-chars">50</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="margin-right">10</property>
+                <property name="label" translatable="yes">Max # Storm Items:</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-MaxDesktopFallenDepth">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Use this if storm items fall below the bottom of your screen.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">desktop-depth-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">6</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-DesktopFallenTopOffset">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Use this if storm items fall below the bottom of your screen.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">desktop-lift-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">7</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-BlowOffFactor">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">The higher this setting, the more blowoff will be generated by disappearing windows.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="adjustment">blowoff-strength-adjustment</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">left</property>
+              </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">10</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes">Lift above Desktop:</property>
+                <property name="max-width-chars">50</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">11</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="use-markup">True</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">12</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="name">pageFallen</property>
+            <property name="title" translatable="yes">Fallen</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <child>
+          <!-- n-columns=5 n-rows=10 -->
+          <object class="GtkGrid" id="grid_advanced">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="double-buffered">False</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <property name="column-homogeneous">True</property>
+            <child>
+              <!-- n-columns=1 n-rows=3 -->
+              <object class="GtkGrid" id="header-advanced">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <child>
+                  <object class="GtkButton" id="advanced-defaults">
+                    <property name="label" translatable="yes">Defaults</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Apply default values for the preferences in this tab.</property>
+                    <property name="double-buffered">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <signal name="clicked" handler="onClickedSetAdvancedDefaults" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label-advanced">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="double-buffered">False</property>
+                    <property name="label" translatable="yes">Advanced Settings</property>
+                    <property name="justify">center</property>
+                    <property name="width-chars">96</property>
+                    <property name="single-line-mode">True</property>
+                    <property name="track-visited-links">False</property>
+                    <attributes>
+                      <attribute name="scale" value="1.5"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="height-request">8</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">30</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Scale:</property>
+                <property name="justify">right</property>
+                <property name="xalign">0.89999997615814209</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Transparency:</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Cpu factor:</property>
+                <property name="justify">right</property>
+                <property name="xalign">0.89999997615814209</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-Scale">
+                <property name="name">general-scale</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Overall drawing scale.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="adjustment">scale-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">7</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-Transparency">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Transparency of painted items.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="adjustment">general-transparency-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">6</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="id-CpuLoad">
+                <property name="name">general-cpuload</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">The higher, the smoother plasmastorm will run, but will also use  more cpu power.</property>
+                <property name="double-buffered">False</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="adjustment">cpuload-adjustment</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="digits">0</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">bottom</property>
+                <style>
+                  <class name="cpuload"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">5</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="id-AllWorkspaces">
+                <property name="label" translatable="yes">On all Work Spaces</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Use all workspaces or current one only.</property>
+                <property name="double-buffered">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="vexpand">True</property>
+                <property name="label" translatable="yes">    </property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="name">pageAdvanced</property>
+            <property name="title" translatable="yes">Advanced</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="headerbar">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="valign">center</property>
+        <property name="has-subtitle">False</property>
+        <property name="spacing">1</property>
+        <property name="show-close-button">True</property>
+        <child>
+          <object class="GtkComboBoxText" id="id-Lang">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="double-buffered">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="active">0</property>
+            <items>
+              <item translatable="yes">en</item>
+              <item>fr</item>
+              <item>nl</item>
+              <item translatable="yes">it</item>
+            </items>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackSwitcher" id="tabs">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="double-buffered">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="margin-left">12</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="homogeneous">True</property>
+            <property name="icon-size">0</property>
+            <property name="stack">stack</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
