@@ -196,6 +196,10 @@ void initializeMainWindow() {
         shapesComboBox), "Bubbles");
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
         shapesComboBox), "Hearts");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        shapesComboBox), "Diamonds");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(
+        shapesComboBox), "Music Notes");
 
     // Set Active selection from pref.
     gtk_combo_box_set_active(GTK_COMBO_BOX(

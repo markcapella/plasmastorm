@@ -24,4 +24,6 @@ StormShape0.xpm \
 StormShape1.xpm \
 StormShape2.xpm \
 StormShape3.xpm \
-StormShape4.xpm 
+StormShape4.xpm \
+StormShape5.xpm \
+StormShape6.xpm 

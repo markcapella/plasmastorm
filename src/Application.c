@@ -176,7 +176,6 @@ static int mPrevStormWindowHeight = 0;
 static int mX11ErrorCount = 0;
 const int mX11MaxErrorCount = 500;
 
- 
 
 /** *********************************************************************
  ** Application start method. 

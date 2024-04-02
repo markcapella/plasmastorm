@@ -24,10 +24,14 @@
 #include "../src/Pixmaps/StormShape2.xpm"
 #include "../src/Pixmaps/StormShape3.xpm"
 #include "../src/Pixmaps/StormShape4.xpm"
+#include "../src/Pixmaps/StormShape5.xpm"
+#include "../src/Pixmaps/StormShape6.xpm"
 #define ALL_STORM_FILENAMES \
 STORM_SHAPE_FILENAME(0) \
 STORM_SHAPE_FILENAME(1) \
 STORM_SHAPE_FILENAME(2) \
 STORM_SHAPE_FILENAME(3) \
 STORM_SHAPE_FILENAME(4) \
+STORM_SHAPE_FILENAME(5) \
+STORM_SHAPE_FILENAME(6) \
 
