@@ -28,24 +28,23 @@
  * __E_WINDOW_MAPPED
  */
 
-#include "x11WindowHelper.h"
-// #include "debug.h"
 
-#include "safeMalloc.h"
-#include "windows.h"
+#include <pthread.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-#include <unistd.h>
-
+#include "ColorCodes.h"
 #include "rootWindowHelper.h"
+#include "safeMalloc.h"
+#include "windows.h"
+#include "x11WindowHelper.h"
 
 /***********************************************************
  * Module Method stubs.
@@ -62,7 +61,8 @@ void getX11WindowsList(WinInfo** winInfoList, int* numberOfWindows) {
     getRawWindowsList(winInfoList, numberOfWindows);
     getFinishedWindowsList(winInfoList, numberOfWindows);
 
-    return;
+    // printf("x11WindowHelper: getX11WindowsList() "
+    //    "numberOfWindows: %i\n", *numberOfWindows);
 }
 
 /** *********************************************************************
@@ -610,7 +610,7 @@ getX11StackedWindowsList(Window** wins) {
  **/
 void
 logWindow(Window window) {
-    ensureWinInfoList();
+    getWinInfoList();
 
     // Normal case, get WinInfo item and log it.
     WinInfo* winInfoItem = findWinInfoByWindowId(window);
@@ -626,7 +626,7 @@ logWindow(Window window) {
 
         char resultMsg[1024];
         snprintf(resultMsg, sizeof(resultMsg),
-            "   wmctrl: [win: 0x%08lx par: 0x%08lx] ws:%3ld w:%6d h:%6d   "
+            "[0x%08lx par: 0x%08lx] ws:%3ld w:%6d h:%6d   "
             "st:%d dk:%d hd:%d  %s\n",
             window, parentWindow, winInfoItem->ws,
             winInfoItem->w, winInfoItem->h,
@@ -659,11 +659,9 @@ logWindow(Window window) {
             &grandChildrenWindow, &windowGrandChildCount);
     }
 
-    char resultMsg[1024];
-    snprintf(resultMsg, sizeof(resultMsg),
-        "   wmctrl: [win: 0x%08lx par: 0x%08lx, grandParent: 0x%08lx] ???\n",
-        window, parentWindow, grandParentWindow);
-    fprintf(stdout, "%s", resultMsg);
+    printf("%s[0x%08lx par: 0x%08lx, grandParent: 0x%08lx].%s\n",
+        COLOR_YELLOW, window, parentWindow,
+        grandParentWindow, COLOR_NORMAL);
 
     if (grandChildrenWindow) {
         XFree((char *) grandChildrenWindow);
@@ -680,6 +678,10 @@ void
 logAllWindowsStackedTopToBottom() {
     Window* stackedWins;
     int numberOfStackedWins = getX11StackedWindowsList(&stackedWins);
+
+    printf("\n%splasmastorm::WindowHelper "
+        "logAllWindowsStackedTopToBottom()\n   numberOfStackedWins: "
+        "%i.%s\n", COLOR_BLUE, numberOfStackedWins, COLOR_NORMAL);
 
     fprintf(stdout, "\n");
     for (int i = numberOfStackedWins - 1; i >= 0; i--) {

@@ -107,9 +107,11 @@ generatedIncludes.h: Pixmaps
 
 install-data-local:
 	cp 'Pixmaps/plasmastormicon.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmadashboardicon.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastormicon.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmadashboardicon.png
 
 TESTS = test1.sh
 

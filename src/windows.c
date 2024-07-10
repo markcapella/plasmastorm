@@ -28,7 +28,7 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-// #include "debug.h"
+#include "ColorCodes.h"
 #include "Fallen.h"
 #include "Prefs.h"
 #include "mygettext.h"
@@ -40,108 +40,27 @@
 #include "x11WindowHelper.h"
 #include "xdo.h"
 
-
-/***********************************************************
- * Externally provided to this Module.
- */
-bool is_NET_WM_STATE_Hidden(Window window);
-bool is_WM_STATE_Hidden(Window window);
-
-void uninitQPickerDialog();
-void endApplication(void);
-
-
-/***********************************************************
- * Module Method stubs.
- */
-//**
-// Workspace.
-static void udpateWorkspaceInfo();
-static int do_sendevent();
-extern int updateWindowsList();
-
-//**
-// Active & Focused X11 Window Helper methods.
-extern Window getActiveX11Window();
-Window getFocusedX11Window();
-int getFocusedX11XPos();
-int getFocusedX11YPos();
-
 //**
 // ActiveApp member helper methods.
 Window mActiveAppWindow = None;
-void clearAllActiveAppFields();
-
-extern Window getActiveAppWindow();
-void setActiveAppWindow(Window);
-Window getParentOfActiveAppWindow();
-
 const int mINVALID_POSITION = -1;
 int mActiveAppXPos = mINVALID_POSITION;
-int getActiveAppXPos();
-void setActiveAppXPos(int);
-
 int mActiveAppYPos = mINVALID_POSITION;
-int getActiveAppYPos();
-void setActiveAppYPos(int);
-
-//**
-// Windows life-cycle methods.
-extern void onCursorChange(XEvent*);
-extern void onAppWindowChange(Window);
-
-extern void onWindowCreated(XEvent*);
-extern void onWindowReparent(XEvent*);
-extern void onWindowChanged(XEvent*);
-
-extern void onWindowMapped(XEvent*);
-extern void onWindowFocused(XEvent*);
-extern void onWindowBlurred(XEvent*);
-extern void onWindowUnmapped(XEvent*);
-
-extern void onWindowDestroyed(XEvent*);
-
-//**
-// Windows life-cycle helper methods.
-bool isMouseClickedAndHeldDown();
 
 //**
 // Window dragging methods.
 bool mIsWindowBeingDragged;
-void clearAllDragFields();
-
-extern bool isWindowBeingDragged();
-void setIsWindowBeingDragged(bool);
-
 Window mWindowBeingDragged = None;
-Window getWindowBeingDragged();
-void setWindowBeingDragged(Window);
-
 Window mActiveAppDragWindowCandidate = None;
-Window getActiveAppDragWindowCandidate();
-void setActiveAppDragWindowCandidate(Window);
-
-Window getDragWindowOf(Window);
-
-//**
-// Debug methods.
-void logCurrentTimestamp();
-void logWindowAndAllParents(Window window);
 
 //**
 // Main WinInfo (Windows) list & helpers.
 static int mWinInfoListLength = 0;
 static WinInfo* mWinInfoList = NULL;
 
-void getWinInfoList();
-void ensureWinInfoList();
-WinInfo* findWinInfoByWindowId(Window);
-
-
 /** *********************************************************************
  ** Module globals and consts.
  **/
-
 const int mWindowXOffset = 4; // magic
 const int mWindowWOffset = -8; // magic
 
@@ -166,7 +85,6 @@ void addWindowsModuleToMainloop() {
  ** This method ...
  **/
 int WorkspaceActive() {
-    // ah, so difficult ...
     if (Flags.AllWorkspaces) {
         return 1;
     }
@@ -231,9 +149,9 @@ void initDisplayDimensions() {
  ** This method ...
  **/
 void updateDisplayDimensions() {
-    printf("updateDisplayDimensions() Starts.\n");
 
     lockFallenSemaphore();
+
     xdo_wait_for_window_map_state(mGlobal.xdo,
         mGlobal.StormWindow, IsViewable);
 
@@ -257,7 +175,6 @@ void updateDisplayDimensions() {
     clearStormWindow();
 
     unlockFallenSemaphore();
-    printf("updateDisplayDimensions() Finishes.\n");
 }
 
 /** *********************************************************************
@@ -346,11 +263,11 @@ int updateWindowsList() {
 }
 
 /** *********************************************************************
- ** This method returns the Active window.
+ ** This method returns the Active window (can be null.)
  **/
 Window getActiveX11Window() {
     Window activeWindow = None;
-    xdo_get_active_window(xdo_new_with_opened_display(
+    getActiveWindowFromXDO(xdo_new_with_opened_display(
         mGlobal.display, (char*) NULL, 0), &activeWindow);
 
     return activeWindow;
@@ -527,14 +444,22 @@ void onWindowMapped(XEvent* event) {
 
     // Determine window drag state.
     if (!isWindowBeingDragged()) {
-        // Did we just start dragging window via mouse?
-        if (isMouseClickedAndHeldDown(event->xmap.window)) {
-            // Clear fallen from window that just started dragging.
-            setIsWindowBeingDragged(true);
-            setWindowBeingDragged(getDragWindowOf(
-                getFocusedX11Window()));
-            removeFallenFromWindow(getWindowBeingDragged());
-            return;
+        if (isMouseClickedAndHeldInWindow(
+            event->xmap.window)) {
+            if (event->xmap.window != None) {
+                const Window focusedWindow =
+                    getFocusedX11Window();
+                if (focusedWindow != None) {
+                    const Window dragWindow =
+                        getDragWindowOf(focusedWindow);
+                    if (dragWindow != None) {
+                        setIsWindowBeingDragged(true);
+                        setWindowBeingDragged(dragWindow);
+                        removeFallenFromWindow(getWindowBeingDragged());
+                        return;
+                    }
+                }
+            }
         }
     }
 
@@ -613,7 +538,10 @@ void onWindowDestroyed(__attribute__((unused)) XEvent* event) {
  ** This method decides if the user ia dragging a window via a mouse
  ** click-and-hold on the titlebar.
  **/
-bool isMouseClickedAndHeldDown(Window window) {
+bool isMouseClickedAndHeldInWindow(Window window) {
+    // printf("%sApplication: isMouseClickedAndHeldInWindow() "
+    //     "Starts.%s\n", COLOR_YELLOW, COLOR_NORMAL);
+
     //  Find the focused window pointer click state.
     Window root_return, child_return;
     int root_x_return, root_y_return;
@@ -629,7 +557,13 @@ bool isMouseClickedAndHeldDown(Window window) {
 
     // If click-state is clicked-down, we're dragging.
     const unsigned int POINTER_CLICKDOWN = 256;
-    return foundPointerState && (pointerState & POINTER_CLICKDOWN);
+    const bool result = foundPointerState &&
+        (pointerState & POINTER_CLICKDOWN);
+
+    // printf("%sApplication: isMouseClickedAndHeldInWindow() "
+    //     "Finishes.%s\n", COLOR_YELLOW, COLOR_NORMAL);
+
+    return result;
 }
 
 /** *********************************************************************
@@ -669,8 +603,8 @@ void setActiveAppDragWindowCandidate(Window candidate) {
  ** is in mWinInfoList (visible window on screen).
  **/
 Window getDragWindowOf(Window window) {
-    Window windowNode = window;
 
+    Window windowNode = window;
     while (true) {
         // Is current node in windows list?
         WinInfo* windowListItem = mWinInfoList;
@@ -696,6 +630,7 @@ Window getDragWindowOf(Window window) {
         windowNode = parent;
     }
 }
+
 /** *********************************************************************
  ** This method logs a timestamp in seconds & milliseconds.
  **/
@@ -768,19 +703,11 @@ void getWinInfoList() {
 }
 
 /** *********************************************************************
- ** This method frees existing list, and refreshes it.
- **/
-void ensureWinInfoList() {
-    if (!mWinInfoList) {
-        getX11WindowsList(&mWinInfoList, &mWinInfoListLength);
-    }
-}
-
-/** *********************************************************************
  ** This method scans all WinInfos for a requested ID.
  **/
 WinInfo* findWinInfoByWindowId(Window window) {
     WinInfo* winInfoItem = mWinInfoList;
+
     for (int i = 0; i < mWinInfoListLength; i++) {
         if (winInfoItem->window == window) {
             return winInfoItem;
@@ -789,6 +716,53 @@ WinInfo* findWinInfoByWindowId(Window window) {
     }
 
     return NULL;
+}
+
+/** *********************************************************************
+ ** This method checks if a Snow or Star item is behind a window.
+ **
+ ** Note, Overlap check will decide that FULLSCREEN windows such
+ **       as the DESKTOP & STORMWINDOW Do not obscure anything.
+ **       We Snow and Show Stars on top of these.
+ **
+ **       App Windows less than fullscreen return correct decision.
+ **       We Snow and Show Stars as appropriate.
+ **
+ **       App Windows switched to "fullscreen" report LESS than
+ **       FULLSCREEN size, as they allow for Window decorations.
+ **       We do not Snow or Show Stars on top of these.
+ */
+bool isAreaClippedByWindow(int xPos, int yPos,
+    unsigned xWidth, unsigned yHeight) {
+
+    WinInfo* winInfo = mWinInfoList;
+
+    for (int i = 0; i < mWinInfoListLength; i++) {
+        if (!winInfo->sticky && (winInfo->ws >= 0 &&
+            winInfo->ws != mGlobal.ChosenWorkSpace)) {
+            winInfo++;
+            continue;
+        }
+
+        if (winInfo->dock ||
+            winInfo->hidden) {
+            winInfo++;
+            continue;
+        }
+
+        // Overlap check, with convenient fullscreen edge-case.
+        if (xPos + (signed) xWidth < winInfo->x ||
+            yPos + (signed) yHeight < winInfo->y ||
+            xPos > winInfo->x + (signed) winInfo->w ||
+            yPos > winInfo->y + (signed) winInfo->h) {
+            winInfo++;
+            continue;
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 /** *********************************************************************

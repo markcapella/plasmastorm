@@ -25,10 +25,18 @@
 #define GTK_MINOR 20
 #define GTK_MICRO 0
 
-extern void respondToLanguageSettingsChanges();
-extern void initializeMainWindow();
 
-extern void ui_set_sticky(int x);
+extern GtkWidget* getMainWindowOfUI();
+
+extern void initializeMainWindow();
+void init_pixmaps();
+
+extern int isGtkVersionValid();
+extern char *ui_gtk_version();
+extern char *ui_gtk_required();
+
+extern void setLanguageEnvironmentVar();
+extern void respondToLanguageSettingsChanges();
 
 extern void addBusyStyleClass();
 extern void removeBusyStyleClass();
@@ -36,20 +44,34 @@ extern void removeBusyStyleClass();
 void addSliderNotAvailStyleClass();
 void removeSliderNotAvailStyleClass();
 
+void init_buttons();
+extern void set_buttons();
+void connectAllButtonSignals();
+
+extern void ui_set_sticky(int x);
 extern void ui_gray_ww(const int m);
 extern void ui_gray_below(const int m);
-extern int isGtkVersionValid();
-extern char *ui_gtk_version();
-extern char *ui_gtk_required();
-
-extern void set_buttons();
-extern void setLanguageEnvironmentVar();
-
-void init_buttons();
-void connectAllButtonSignals();
-void init_pixmaps();
 
 void onSelectedStormShapeBox(GtkComboBoxText*,
     gpointer data);
 void onSelectedLanguageBox(GtkComboBoxText *combo,
     gpointer data);
+
+void setWidgetValuesFromPrefs();
+
+void applyUICSSTheme();
+void applyCSSToWindow(GtkWidget*, GtkCssProvider*);
+
+void setLabelText(GtkLabel*, const gchar*);
+
+extern void logAllWindowsStackedTopToBottom();
+
+gboolean handleMainWindowStateEvents(GtkWidget*,
+    GdkEventWindowState*, gpointer);
+
+bool startQPickerDialog(char* callerTag,
+    char* colorAsString);
+
+int getQPickerRed();
+int getQPickerGreen();
+int getQPickerBlue();

@@ -478,19 +478,21 @@ void generateFallenStormItems(FallenItem *fallen,
         ilast = fallen->w;
     }
 
-    for (int i = ifirst; i < ilast; i += 1) {
-        for (int j = 0; j < fallen->fallenHeight[i]; j++) {
+    for (int i = ifirst; i < ilast; i += 2) {
+        for (int j = 0; j < fallen->fallenHeight[i]; j += 2) {
 
-            int const kmax = getBlowoffEventCount();
+            const int kmax = getBlowoffEventCount();
             for (int k = 0; k < kmax; k++) {
-                const bool probability = (drand48() < 0.15);
+                const bool probability = (drand48() < 0.1);
 
                 if (probability) {
                     StormItem* stormItem = createStormItem(
                         Flags.ComboStormShape - 1);
+
                     stormItem->cyclic = 0;
 
-                    stormItem->xRealPosition = fallen->x + i + 16 * (drand48() - 0.5);
+                    stormItem->xRealPosition = fallen->x + i + 16 *
+                        (drand48() - 0.5);
                     stormItem->yRealPosition = fallen->y - j - 8;
 
                     stormItem->xVelocity = (Flags.ShowWind) ?

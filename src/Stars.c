@@ -142,11 +142,10 @@ void eraseStarsFrame() {
 
     for (int i = 0; i < mNumberOfStars; i++) {
         StarCoordinate *star = &mStarCoordinates[i];
-        int x = star->x;
-        int y = star->y;
 
         sanelyCheckAndClearDisplayArea(mGlobal.display,
-            mGlobal.StormWindow, x, y, STAR_SIZE, STAR_SIZE, false);
+            mGlobal.StormWindow, star->x, star->y,
+            STAR_SIZE, STAR_SIZE, false);
     }
 }
 
@@ -180,22 +179,21 @@ void drawStarsFrame(cairo_t *cr) {
         return;
     }
 
-
     cairo_save(cr);
+
     cairo_set_line_width(cr, 1);
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 
     for (int i = 0; i < mNumberOfStars; i++) {
         StarCoordinate* star = &mStarCoordinates[i];
-        int x = star->x;
-        int y = star->y;
+        cairo_set_source_surface(cr, starScreenSurfaces[star->color],
+            star->x, star->y);
 
-        const int color = star->color;
-        cairo_set_source_surface(cr, starScreenSurfaces[color],
-            x, y);
-
-        #define ALPHA (0.01 * (100 - Flags.Transparency))
-        my_cairo_paint_with_alpha(cr, ALPHA);
+        if (isAreaClippedByWindow(star->x, star->y,
+            STAR_SIZE, STAR_SIZE)) {
+            my_cairo_paint_with_alpha(cr,
+                (0.01 * (100 - Flags.Transparency)));
+        }
     }
 
     cairo_restore(cr);

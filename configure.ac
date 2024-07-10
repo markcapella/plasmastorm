@@ -1,5 +1,4 @@
 #                     -*- Autoconf -*-
-
 # Process this file with autoconf to produce a configure script.
 #
 # -copyright-
@@ -23,7 +22,7 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmastorm], [2024.04.02], [markcapella@twcny.rr.com])
+AC_INIT([plasmastorm], [2024.07.10], [markcapella@twcny.rr.com])
 AC_CONFIG_SRCDIR([src/plasmastorm.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE

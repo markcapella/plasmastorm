@@ -331,8 +331,8 @@ int xdo_click_window(const xdo_t *xdo, Window window, int button);
  * @param button The mouse button. Generally, 1 is left, 2 is middle, 3 is
  *    right, 4 is wheel up, 5 is wheel down.
  */
-int xdo_click_window_multiple(
-    const xdo_t *xdo, Window window, int button, int repeat, useconds_t delay);
+int xdo_click_window_multiple(const xdo_t *xdo, Window window,
+    int button, int repeat, useconds_t delay);
 
 /**
  * Type a string to the specified window.
@@ -345,8 +345,8 @@ int xdo_click_window_multiple(
  * @param delay The delay between keystrokes in microseconds. 12000 is a decent
  *    choice if you don't have other plans.
  */
-int xdo_enter_text_window(
-    const xdo_t *xdo, Window window, const char *string, useconds_t delay);
+int xdo_enter_text_window(const xdo_t *xdo, Window window,
+    const char *string, useconds_t delay);
 
 /**
  * Send a keysequence to the specified window.
@@ -574,17 +574,6 @@ int xdo_get_focused_window_sane(const xdo_t *xdo, Window *window_ret);
 int xdo_activate_window(const xdo_t *xdo, Window wid);
 
 /**
- * Wait for a window to be active or not active.
- *
- * Requires your window manager to support this.
- * Uses _NET_ACTIVE_WINDOW from the EWMH spec.
- *
- * @param window the window to wait on
- * @param active If 1, wait for active. If 0, wait for inactive.
- */
-int xdo_wait_for_window_active(const xdo_t *xdo, Window window, int active);
-
-/**
  * Map a window. This mostly means to make the window visible if it is
  * not currently mapped.
  *
@@ -645,7 +634,7 @@ int xdo_get_window_size(const xdo_t *xdo, Window wid, unsigned int *width_ret,
  *
  * @param window_ret Pointer to Window where the active window is stored.
  */
-int xdo_get_active_window(const xdo_t *xdo, Window *window_ret);
+int getActiveWindowFromXDO(const xdo_t *xdo, Window *window_ret);
 
 /**
  * Get a window ID by clicking on it. This function blocks until a selection

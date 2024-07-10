@@ -63,6 +63,8 @@ void respondToBlowoffSettingsChanges() {
     //UIDO(BlowOffFactor, );
     if (Flags.BlowOffFactor != OldFlags.BlowOffFactor) {
         OldFlags.BlowOffFactor = Flags.BlowOffFactor;
+        // printf("%s\nplasmastorm::Blowoff respondToBlowoffSettingsChanges()"
+        //     " : %d\n", "BlowOffFactor", Flags.BlowOffFactor);
         Flags.mHaveFlagsChanged++;
     }
 }
@@ -71,7 +73,11 @@ void respondToBlowoffSettingsChanges() {
  ** This method gets a random number for a blowoff event.
  **/
 int getBlowoffEventCount() {
-    return 0.04 * Flags.BlowOffFactor * drand48();
+    const int result = 0.04 * Flags.BlowOffFactor * drand48();
+    // printf("%s\nplasmastorm::Blowoff getBlowoffEventCount()"
+    //     " : %d\n", "BlowOffFactor", result);
+
+    return result;
 }
 
 /** *********************************************************************

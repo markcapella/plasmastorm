@@ -622,14 +622,20 @@ int updateStormItem(StormItem* stormItem) {
     // Fallen interaction.
     if (!stormItem->fluff) {
         lockFallenSemaphore();
-        isStormItemFallen(stormItem, lrintf(NewX), lrintf(NewY),
-            mStormItemSurfaceList[stormItem->shapeType].width);
+        if (isStormItemFallen(stormItem,
+            lrintf(NewX), lrintf(NewY))) {
+            removeStormItemInItemset(stormItem);
+            unlockFallenSemaphore();
+            return false;
+        }
         unlockFallenSemaphore();
+
+        stormItem->isVisible = isStormItemBehindWindow(stormItem,
+            lrintf(NewX), lrintf(NewY));
     }
 
     stormItem->xRealPosition = NewX;
     stormItem->yRealPosition = NewY;
-
     return true;
 }
 
@@ -852,8 +858,11 @@ GdkRGBA getNextStormShapeColorAsRGB() {
  **      x = NewX .. NewX + width-of-stormItem - 1
  **      y = NewY + (height of stormItem)
  **/
-void isStormItemFallen(StormItem* stormItem,
-    int xIntPosition, int yIntPosition, int itemWidth) {
+bool isStormItemFallen(StormItem* stormItem,
+    int xPos, int yPos) {
+
+    const int itemWidth =
+        mStormItemSurfaceList[stormItem->shapeType].width;
 
     FallenItem* fallen = mGlobal.FallenFirst;
     while (fallen) {
@@ -861,21 +870,23 @@ void isStormItemFallen(StormItem* stormItem,
             fallen = fallen->next;
             continue;
         }
+
         if (fallen->winInfo.window != None &&
             !isFallenOnVisibleWorkspace(fallen) &&
             !fallen->winInfo.sticky) {
             fallen = fallen->next;
             continue;
         }
-        if (xIntPosition < fallen->x ||
-            xIntPosition > fallen->x + fallen->w ||
-            yIntPosition >= fallen->y + 2) {
+
+        if (xPos < fallen->x ||
+            xPos > fallen->x + fallen->w ||
+            yPos >= fallen->y + 2) {
             fallen = fallen->next;
             continue;
         }
 
         // StormItem hits first FallenItem & we're done.
-        int istart = xIntPosition - fallen->x;
+        int istart = xPos - fallen->x;
         if (istart < 0) {
             istart = 0;
         }
@@ -885,25 +896,39 @@ void isStormItemFallen(StormItem* stormItem,
         }
 
         for (int i = istart; i < imax; i++) {
-            if (yIntPosition > fallen->y - fallen->fallenHeight[i] - 1) {
+            if (yPos > fallen->y - fallen->fallenHeight[i] - 1) {
                 if (fallen->fallenHeight[i] < fallen->maxFallenHeight[i]) {
-                    updateFallenPartial(fallen,
-                        xIntPosition - fallen->x, itemWidth);
+                    updateFallenPartial(fallen, xPos - fallen->x,
+                        itemWidth);
                 }
 
                 if (canFallenConsumeStormItem(fallen)) {
                     setStormItemState(stormItem, .9);
                     if (!stormItem->fluff) {
-                        removeStormItemInItemset(stormItem);
+                        return true;
                     }
                 }
-                return;
+
+                return false;
             }
         }
 
         // Otherwise, loop thru all.
         fallen = fallen->next;
     }
+
+    return false;
+}
+
+/** *********************************************************************
+ ** This method checks if stormItem is behind a window.
+ **/
+bool isStormItemBehindWindow(StormItem* stormItem,
+        int xPos, int yPos) {
+
+    return isAreaClippedByWindow(xPos, yPos,
+        mStormItemSurfaceList[stormItem->shapeType].width,
+        mStormItemSurfaceList[stormItem->shapeType].height);
 }
 
 /** *********************************************************************
@@ -914,6 +939,7 @@ void pushStormItemIntoItemset(StormItem* stormItem) {
 
     stormItem->cyclic = 1;
     stormItem->isFrozen = false;
+    stormItem->isVisible = true;
 
     stormItem->fluff = 0;
     stormItem->flufftimer = 0;

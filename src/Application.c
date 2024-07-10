@@ -51,6 +51,7 @@
 // plasmastorm headers.
 #include "Blowoff.h"
 #include "ClockHelper.h"
+#include "ColorCodes.h"
 #include "Fallen.h"
 #include "loadmeasure.h"
 #include "mainstub.h"
@@ -121,7 +122,7 @@ static int drawTransparentWindow(gpointer);
 static gboolean handleTransparentWindowDrawEvents(
     GtkWidget*, cairo_t*, gpointer);
 
-static void StartWindow();
+static void createStormWindow();
 static void SetWindowScale();
 
 static int handlePendingX11Events();
@@ -134,7 +135,6 @@ extern void setAppAboveOrBelowAllWindows();
 static void setmGlobalDesktopSession();
 
 extern int updateWindowsList();
-extern void getWinInfoList();
 
 static int doAllUISettingsUpdates();
 void respondToAdvancedSettingsChanges();
@@ -147,35 +147,32 @@ void uninitQPickerDialog();
 /** *********************************************************************
  ** Module globals and consts.
  **/
-//static char **mArgV;
-//static int mArgC;
 
+// mGlobal object base.
 struct _mGlobal mGlobal;
 
-Bool mMainWindowNeedsReconfiguration = true;
+static char* mStormWindowDebugTitle = NULL;
 
-static char* mStormWindowTItle = NULL;
+static GtkWidget* mStormWindowWidget = NULL;
 static guint mTransparentWindowGUID = 0;
-static guint mCairoWindowGUID = 0;
-static GtkWidget *mTransparentGTKWindow = NULL;
-
-static bool mX11CairoEnabled = false;
-cairo_t *mCairoWindow = NULL;
-cairo_surface_t *mCairoSurface = NULL;
-
-int xfixes_event_base_ = -1;
-
 static int mIsSticky = 0;
+
+static bool mX11CairoEnabled;
+static guint mCairoWindowGUID = 0;
+cairo_t* mCairoWindow = NULL;
+cairo_surface_t* mCairoSurface = NULL;
 
 static int wantx = 0;
 static int wanty = 0;
 
+Bool mMainWindowNeedsReconfiguration = true;
 static int mPrevStormWindowWidth = 0;
 static int mPrevStormWindowHeight = 0;
 
-static int mX11ErrorCount = 0;
 const int mX11MaxErrorCount = 500;
+static int mX11ErrorCount = 0;
 
+int mX11LastErrorCode = 0;
 
 /** *********************************************************************
  ** Application start method. 
@@ -183,20 +180,20 @@ const int mX11MaxErrorCount = 500;
 int startApplication(int argc, char *argv[]) {
     logAppVersion();
 
-    printf("Available languages are: %s.\n\n",
+    printf("Available languages are:\n%s.\n\n",
         LANGUAGES);
 
     // Log Gnome info.
     printf("GTK version: %s\n", ui_gtk_version());
     #ifdef GSL_VERSION
-        fprintf(stdout, "GSL version: %s\n", GSL_VERSION);
+        fprintf(stdout, "GSL version: %s\n\n", GSL_VERSION);
     #else
-        fprintf(stdout, "GSL version: UNKNOWN\n");
+        fprintf(stdout, "GSL version: UNKNOWN\n\n");
     #endif
 
     if (!isGtkVersionValid()) {
         printf("plasmastorm needs gtk version >= %s, "
-            "found version %s \n", ui_gtk_required(),
+            "found version %s \n\n", ui_gtk_required(),
             ui_gtk_version());
         return 0;
     }
@@ -206,7 +203,7 @@ int startApplication(int argc, char *argv[]) {
     setenv("GDK_BACKEND", "x11", 1);
     mGlobal.isWaylandDisplay = getenv("WAYLAND_DISPLAY") &&
         getenv("WAYLAND_DISPLAY")[0];
-    fprintf(stdout, "\nWayland desktop %s detected.\n",
+    fprintf(stdout, "Wayland desktop %s detected.\n\n",
         mGlobal.isWaylandDisplay ? "was" : "was not");
 
     // Set app shutdown handlers.
@@ -288,11 +285,7 @@ int startApplication(int argc, char *argv[]) {
     // Start Main GUI Window.
     setStormShapeColor(getRGBFromString(Flags.StormItemColor1));
 
-    StartWindow();
-    printf("\nIt\'s Storming in [%#lx] :  %s\n   xPos: %d  yPos: %d\n   "
-        "width: %d  heigth: %d\n", mGlobal.StormWindow, mStormWindowTItle,
-        mGlobal.StormWindowX, mGlobal.StormWindowY, mGlobal.StormWindowWidth,
-        mGlobal.StormWindowHeight);
+    createStormWindow();
 
     // Init all Global Flags.
     OldFlags.Done = Flags.Done;
@@ -309,8 +302,6 @@ int startApplication(int argc, char *argv[]) {
     OldFlags.StormSaturationFactor = Flags.StormSaturationFactor;
 
     OldFlags.ShowStars = Flags.ShowStars;
-    printf("plasmastorm: startApplication() Value: ShowStars %i.\n",
-        Flags.ShowStars);
     OldFlags.MaxStarCount = Flags.MaxStarCount;
 
     OldFlags.ShowWind = Flags.ShowWind;
@@ -365,31 +356,47 @@ int startApplication(int argc, char *argv[]) {
 
     addLoadMonitorToMainloop();
 
-    addMethodToMainloop(PRIORITY_DEFAULT, DO_HANDLE_X11_EVENT_TIME,
-        handlePendingX11Events);
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        DO_HANDLE_X11_EVENT_TIME, handlePendingX11Events);
 
-    addMethodToMainloop(PRIORITY_DEFAULT, DO_DISPLAY_RECONFIGURATION_EVENT_TIME,
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        DO_DISPLAY_RECONFIGURATION_EVENT_TIME,
         handleDisplayReconfigurationChange);
 
-    addMethodToMainloop(PRIORITY_HIGH, DO_UI_SETTINGS_UPDATES_EVENT_TIME,
+    addMethodToMainloop(PRIORITY_HIGH,
+        DO_UI_SETTINGS_UPDATES_EVENT_TIME,
         doAllUISettingsUpdates);
 
+    // Set mGlobal.ChosenWorkSpace.
     HandleCpuFactor();
-    fflush(stdout);
-
-    // Set mGlobal.ChosenWorkSpace then main loop.
     DoAllWorkspaces();
 
-    // Gopher it!
+    // Log Storming window status.
+    printf("%splasmastorm: It\'s Storming in:%s\n",
+        COLOR_CYAN, COLOR_NORMAL);
+    logWindow(mGlobal.StormWindow);
+    fflush(stdout);
+
+    // Bring it all up !
+    printf("\n%splasmastorm::Application "
+        "startApplication() gtk_main() Starts.%s\n",
+        COLOR_YELLOW, COLOR_NORMAL);
+
     gtk_main();
 
-    // Terminate it!
-    if (mStormWindowTItle) {
-        free(mStormWindowTItle);
+    printf("%splasmastorm::Application gtk_main() "
+        "startApplication() Finishes.%s\n",
+        COLOR_YELLOW, COLOR_NORMAL);
+
+    // Bring it all back down !
+    if (mStormWindowDebugTitle) {
+        free(mStormWindowDebugTitle);
     }
 
+    // Terminate Storming.
     XClearWindow(mGlobal.display, mGlobal.StormWindow);
     XFlush(mGlobal.display);
+
     XCloseDisplay(mGlobal.display);
     uninitQPickerDialog();
 
@@ -401,8 +408,8 @@ int startApplication(int argc, char *argv[]) {
         return 0;
     }
 
-    fprintf(stdout, "\nThanks for using plasmastorm!"
-        " - You\'re the best!\n");
+    printf("\n%sThanks for using plasmastorm, you rock !%s\n",
+        COLOR_BLUE, COLOR_NORMAL);
     fflush(stdout);
 
     return 0;
@@ -418,57 +425,76 @@ void setAppAboveOrBelowAllWindows() {
 /** *********************************************************************
  ** This method ...
  **/
-void StartWindow() {
-    mGlobal.Rootwindow = DefaultRootWindow(mGlobal.display);
+void createStormWindow() {
+    mGlobal.Rootwindow =
+        DefaultRootWindow(mGlobal.display);
 
-    mGlobal.hasDestopWindow = false;
     mGlobal.isStormWindowTransparent = false;
+    mX11CairoEnabled = false;
+
+    mGlobal.hasDestopWindow = true;
 
     // Try to create a transparent clickthrough window.
-    GtkWidget* gtkWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    GtkWidget* stormWindowWidget =
+        gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-    gtk_widget_set_can_focus(gtkWindow, TRUE);
-    gtk_window_set_decorated(GTK_WINDOW(gtkWindow), FALSE);
-    gtk_window_set_type_hint(GTK_WINDOW(gtkWindow),
+    gtk_widget_set_can_focus(stormWindowWidget, TRUE);
+    gtk_window_set_decorated(GTK_WINDOW(stormWindowWidget), FALSE);
+    gtk_window_set_type_hint(GTK_WINDOW(stormWindowWidget),
         GDK_WINDOW_TYPE_HINT_POPUP_MENU);
 
-    Window transparentGTKWindow;
-    if (createTransparentWindow(mGlobal.display, gtkWindow,
-        Flags.AllWorkspaces, true, true, NULL,
-        &transparentGTKWindow, &wantx, &wanty)) {
+    // Create transparent StormWindow widget.
+    Window stormX11Window;
+    GdkWindow* stormGdkWindow;
 
-        mTransparentGTKWindow = gtkWindow;
-        mGlobal.StormWindow = transparentGTKWindow;
+    if (createTransparentWindow(mGlobal.display, stormWindowWidget,
+        Flags.AllWorkspaces, true, false,
+        &stormGdkWindow, &stormX11Window, &wantx, &wanty)) {
+
         mGlobal.isStormWindowTransparent = true;
+        mStormWindowWidget = stormWindowWidget;
+        mGlobal.StormWindow = stormX11Window;
 
-        mGlobal.hasDestopWindow = true;
+        gtk_window_set_icon_from_file(GTK_WINDOW(mStormWindowWidget),
+            "/usr/share/icons/hicolor/48x48/apps/"
+            "plasmastormicon.png", NULL);
 
-        GtkWidget *drawing_area = gtk_drawing_area_new();
-        gtk_container_add(GTK_CONTAINER(mTransparentGTKWindow), drawing_area);
+        GtkWidget* drawing_area = gtk_drawing_area_new();
+        gtk_container_add(GTK_CONTAINER(mStormWindowWidget),
+            drawing_area);
 
-        g_signal_connect(mTransparentGTKWindow, "draw",
-            G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
+        g_signal_connect(mStormWindowWidget, "draw", G_CALLBACK(
+            handleTransparentWindowDrawEvents), NULL);
+
+        printf("%sTransparent StormWindow created.%s\n\n",
+            COLOR_NORMAL, COLOR_NORMAL);
+
     } else {
-        setmGlobalDesktopSession();
-
-        // Find global StormWindow based on desktop.
-        mGlobal.hasDestopWindow = true;
         mX11CairoEnabled = true;
 
-        Window usableStormWindow = None;
-        if (!strncmp(mGlobal.DesktopSession, "LXDE", 4)) {
-            usableStormWindow = largest_window_with_name(mGlobal.xdo, "^pcmanfm$");
+        // Find global StormWindow based on desktop.
+        setmGlobalDesktopSession();
+
+        Window desktopAsStormWindow = None;
+        if (strncmp(mGlobal.DesktopSession, "LXDE", 4) == 0) {
+            desktopAsStormWindow = largest_window_with_name(
+                mGlobal.xdo, "^pcmanfm$");
         }
-        if (!usableStormWindow) {
-            usableStormWindow = largest_window_with_name(mGlobal.xdo, "^Desktop$");
+        if (!desktopAsStormWindow) {
+            desktopAsStormWindow = largest_window_with_name(
+            mGlobal.xdo, "^Desktop$");
         }
-        if (!usableStormWindow) {
-            usableStormWindow = mGlobal.Rootwindow;
+        if (!desktopAsStormWindow) {
+            desktopAsStormWindow = mGlobal.Rootwindow;
         }
-        mGlobal.StormWindow = usableStormWindow;
+        mGlobal.StormWindow = desktopAsStormWindow;
+
+        printf("\n%splasmastorm:application: createStormWindow() "
+            "Transparent click-thru StormWindow not available.%s\n\n",
+            COLOR_YELLOW, COLOR_NORMAL);
     }
 
-    // Start window Cairo specific.
+    // Start initial window screen position.
     if (mX11CairoEnabled) {
         handleX11CairoDisplay();
         mCairoWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH,
@@ -480,27 +506,33 @@ void StartWindow() {
         mGlobal.WindowOffsetWindowTops = wanty;
     }
 
-    mStormWindowTItle = strdup("no name");
+    // Save StormWindow debug title.
+    mStormWindowDebugTitle = strdup("no name");
     XTextProperty titleBarName;
-    if (XGetWMName(mGlobal.display, mGlobal.StormWindow, &titleBarName)) {
-        mStormWindowTItle = strdup((char *) titleBarName.value);
+
+    if (XGetWMName(mGlobal.display, mGlobal.StormWindow,
+        &titleBarName)) {
+        mStormWindowDebugTitle = strdup((char*)
+            titleBarName.value);
     }
     XFree(titleBarName.value);
 
-    if (!mX11CairoEnabled) {
-        xdo_move_window(mGlobal.xdo, mGlobal.StormWindow, wantx, wanty);
-    }
-
-    xdo_wait_for_window_map_state(mGlobal.xdo, mGlobal.StormWindow, IsViewable);
-
-    initDisplayDimensions();
     mGlobal.StormWindowX = wantx;
     mGlobal.StormWindowY = wanty;
+
+    if (!mX11CairoEnabled) {
+        xdo_move_window(mGlobal.xdo, mGlobal.StormWindow,
+            mGlobal.StormWindowX, mGlobal.StormWindowY);
+    }
+    xdo_wait_for_window_map_state(mGlobal.xdo,
+        mGlobal.StormWindow, IsViewable);
+
+    initDisplayDimensions();
     mPrevStormWindowWidth = mGlobal.StormWindowWidth;
     mPrevStormWindowHeight = mGlobal.StormWindowHeight;
 
-    fflush(stdout);
     SetWindowScale();
+    fflush(stdout);
 }
 
 /** *********************************************************************
@@ -531,7 +563,6 @@ void setmGlobalDesktopSession() {
 
 /** *********************************************************************
  ** Cairo specific. handleDisplayReconfigurationChange()
- ** startApplication->StartWindow()
  **/
 void handleX11CairoDisplay() {
     unsigned int width, height;
@@ -566,9 +597,9 @@ void setTransparentWindowStickyState(int isSticky) {
 
     mIsSticky = isSticky;
     if (mIsSticky) {
-        gtk_window_stick(GTK_WINDOW(mTransparentGTKWindow));
+        gtk_window_stick(GTK_WINDOW(mStormWindowWidget));
     } else {
-        gtk_window_unstick(GTK_WINDOW(mTransparentGTKWindow));
+        gtk_window_unstick(GTK_WINDOW(mStormWindowWidget));
     }
 }
 
@@ -661,8 +692,6 @@ void respondToAdvancedSettingsChanges() {
 /** *********************************************************************
  ** This method handles xlib11 event notifications.
  ** Undergoing heavy renovation 2024 Rocks !
- **
- ** https://www.x.org/releases/current/doc/libX11/libX11/libX11.html#Events
  **/
 int handlePendingX11Events() {
     if (Flags.Done) {
@@ -671,26 +700,43 @@ int handlePendingX11Events() {
 
     XFlush(mGlobal.display);
     while (XPending(mGlobal.display)) {
+        // printf("%sApplication: handlePendingX11Events() Starts.%s\n",
+        //     COLOR_YELLOW, COLOR_NORMAL);
+
         XEvent event;
         XNextEvent(mGlobal.display, &event);
 
         // Check for Active window change through loop.
         const Window activeX11Window = getActiveX11Window();
         if (getActiveAppWindow() != activeX11Window) {
+            // printf("%sApplication: handlePendingX11Events() Start : "
+            //     "onAppWindowChange.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
             onAppWindowChange(activeX11Window);
+            // printf("%sApplication: handlePendingX11Events() Finish : "
+            //     "onAppWindowChange.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
         }
 
         // Perform X11 event action.
         switch (event.type) {
             case CreateNotify:
+                // printf("%sApplication: handlePendingX11Events() Start : "
+                //     "onWindowCreated.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 onWindowCreated(&event);
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "onWindowCreated.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             case ReparentNotify:
+                // printf("%sApplication: handlePendingX11Events() Start : "
+                //     "onWindowReparent.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 onWindowReparent(&event);
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "onWindowReparent.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             case ConfigureNotify:
+                // printf("%sApplication: handlePendingX11Events() Start : "
+                //     "onWindowChanged.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 onWindowChanged(&event);
                 if (!isWindowBeingDragged()) {
                     mGlobal.windowsWereDraggedOrMapped++;
@@ -698,46 +744,84 @@ int handlePendingX11Events() {
                         mMainWindowNeedsReconfiguration = true;
                     }
                 }
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "onWindowChanged.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             case MapNotify:
+                // printf("%splasmastorm::Application: "
+                //     "handlePendingX11Events() Start : "
+                //      "onWindowMapped.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 mGlobal.windowsWereDraggedOrMapped++;
                 onWindowMapped(&event);
+                // printf("%splasmastorm::Application: "
+                //     "handlePendingX11Events() Finish : "
+                //      "onWindowMapped.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             case FocusIn:
+                // printf("%sApplication: handlePendingX11Events() Start : "
+                //     "onWindowFocused.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 onWindowFocused(&event);
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "onWindowFocused.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             case FocusOut:
+                // printf("%sApplication: handlePendingX11Events() Start : "
+                //     "onWindowBlurred.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 onWindowBlurred(&event);
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "onWindowBlurred.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             case UnmapNotify:
+                // printf("%sApplication: handlePendingX11Events() Start : "
+                //     "onWindowUnmapped.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 mGlobal.windowsWereDraggedOrMapped++;
                 onWindowUnmapped(&event);
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "onWindowUnmapped.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             case DestroyNotify:
+                // printf("%sApplication: handlePendingX11Events() Start : "
+                //     "onWindowDestroyed.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 onWindowDestroyed(&event);
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "onWindowDestroyed.%s\n\n", COLOR_BLUE, COLOR_NORMAL);
                 break;
 
             default:
-                // Perform XFixes action.
+                // Check & perform XFixes action.
                 int xfixes_event_base;
                 int xfixes_error_base;
+
                 if (XFixesQueryExtension(mGlobal.display,
                     &xfixes_event_base, &xfixes_error_base)) {
                     switch (event.type - xfixes_event_base) {
                         case XFixesCursorNotify:
                             onCursorChange(&event);
+                            // printf("%sApplication: handlePendingX11Events() "
+                            //     "XFixesCursorNotify Event.%s\n\n",
+                            //     COLOR_BLUE, COLOR_NORMAL);
                             break;
                     }
+                } else {
+                    // printf("%sApplication: handlePendingX11Events() "
+                    //     "UN-KNOWN XFixesQueryExtension Event.%s\n\n",
+                    //     COLOR_RED, COLOR_NORMAL);
+                    // break;
                 }
+
+                // printf("%sApplication: handlePendingX11Events() Finish : "
+                //     "UN-KNOWN EVENT ???.%s\n\n", COLOR_RED, COLOR_NORMAL);
                 break;
         }
     }
 
+    // printf("%sApplication: handlePendingX11Events() : Finishes.%s\n\n",
+    //     COLOR_YELLOW, COLOR_NORMAL);
     return TRUE;
 }
 
@@ -764,17 +848,25 @@ void SigHandler(__attribute__((unused)) int signum) {
  **
  ** Primarily, we close the app if the system doesn't seem sane.
  **/
-int handleX11ErrorEvent(Display* dpy, XErrorEvent* err) {
+int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
+    // Save error & quit early if simply BadWindow.
+    mX11LastErrorCode = event->error_code;
+    if (mX11LastErrorCode == BadWindow) {
+        return 0;
+    }
 
+    // Print the error message of the event.
     const int MAX_MESSAGE_BUFFER_LENGTH = 60;
     char msg[MAX_MESSAGE_BUFFER_LENGTH];
+    XGetErrorText(dpy, event->error_code, msg, sizeof(msg));
+    // printf("%splasmastorm::Application handleX11ErrorEvent() %s%s\n",
+    //     COLOR_YELLOW, msg, COLOR_NORMAL);
 
-    XGetErrorText(dpy, err->error_code, msg, sizeof(msg));
-    fprintf(stdout, "%s", msg);
-
+    // Halt after too many errors.
     if (mX11ErrorCount++ > mX11MaxErrorCount) {
-        fprintf(stdout, "More than %d errors, I quit!",
-            mX11MaxErrorCount);
+        printf("\n%splasmastorm::Application handleX11ErrorEvent() "
+            "More than %d errors, I quit!.%s\n", COLOR_RED,
+            mX11MaxErrorCount, COLOR_NORMAL);
         Flags.Done = 1;
     }
 
@@ -818,8 +910,10 @@ void drawCairoWindowInternal(cairo_t *cr) {
 
     // Do all module clears.
     XFlush(mGlobal.display);
+
     eraseStarsFrame();
     removeAllStormItemsInItemset();
+
     XFlush(mGlobal.display);
 
     // Do cairo.
@@ -898,7 +992,8 @@ int drawTransparentWindow(gpointer widget) {
         return FALSE;
     }
 
-    // this will result in a call off handleTransparentWindowDrawEvents():
+    // This will result in a call off
+    // handleTransparentWindowDrawEvents():
     gtk_widget_queue_draw(GTK_WIDGET(widget));
     return TRUE;
 }
@@ -913,7 +1008,8 @@ void HandleCpuFactor() {
         mGlobal.cpufactor = 100.0 / Flags.CpuLoad;
     }
 
-    addMethodToMainloop(PRIORITY_HIGH, DO_STALL_CREATE_STORMITEM_EVENT_TIME,
+    addMethodToMainloop(PRIORITY_HIGH,
+        DO_STALL_CREATE_STORMITEM_EVENT_TIME,
         doStallCreateStormShapeEvent);
 
     addWindowDrawMethodToMainloop();
@@ -927,17 +1023,21 @@ void addWindowDrawMethodToMainloop() {
         if (mTransparentWindowGUID) {
             g_source_remove(mTransparentWindowGUID);
         }
-        mTransparentWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH,
-            DO_CAIRO_DRAW_EVENT_TIME, drawTransparentWindow, mTransparentGTKWindow);
+
+        mTransparentWindowGUID = addMethodWithArgToMainloop(
+            PRIORITY_HIGH, DO_CAIRO_DRAW_EVENT_TIME,
+            drawTransparentWindow, mStormWindowWidget);
         return;
     }
 
+    // If storm window not transparent.
     if (mCairoWindowGUID) {
         g_source_remove(mCairoWindowGUID);
     }
 
-    mCairoWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH,
-        DO_CAIRO_DRAW_EVENT_TIME, drawCairoWindow, mCairoWindow);
+    mCairoWindowGUID = addMethodWithArgToMainloop(
+        PRIORITY_HIGH, DO_CAIRO_DRAW_EVENT_TIME,
+        drawCairoWindow, mCairoWindow);
 }
 
 /** *********************************************************************

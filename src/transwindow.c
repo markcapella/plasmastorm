@@ -19,9 +19,6 @@
 #-# 
 */
 #include <pthread.h>
-// #include "debug.h"
-#include "windows.h"
-#include "transwindow.h"
 #include <stdbool.h>
 
 #include <X11/Intrinsic.h>
@@ -29,197 +26,193 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
+#include "transwindow.h"
+#include "windows.h"
 
-static int resetVolatileTransparentWindowAttributes(
-    GtkWidget *widget);
+/** *********************************************************************
+ ** creates transparent window using gtk3/cairo.
+ **
+ ** inputStormWindow: (input)  GtkWidget to create.
+ ** sticky:      (input)  Visible on all workspaces or not.
+ ** below:       (input)  2: above all other windows.
+ **                       1: below all other windows.
+ **                       0: no action.
+ ** dock:        (input)  Make it a 'dock' window: no decoration and
+ **                       not interfering with app.
+ **
+ ** outputStormWindow:  (output) GdkWindow created
+ ** x11_window:         (output) Window X11 created: (output)
+ **/
+int createTransparentWindow(Display* display,
+    GtkWidget* inputStormWindow, int sticky, int below, int dock,
+    GdkWindow** outputStormWindow, Window* x11_window,
+    int* wantx, int* wanty) {
 
-// extern int getTmpLogFile();
-
-/*
- * creates transparent window using gtk3/cairo.
- *
- * transparentGTKWindow: (input)  GtkWidget to create transparent window in
- * sticky:      (input)  visible on all workspaces or not
- * below:       (input)  1: below all other windows 2: above all other windows
- *                       0: no action
- * dock:        (input)  make it a 'dock' window: no decoration and
- *                       not interfering with app.
- *
- * gdk_window:  (output) GdkWindow created
- * x11_window:  (output) Window X11 created: (output)
- *
- * xpenguins NOTE: with dock=1, gtk ignores the value of below:
- * window is above all other windows
- *
- * NOTE: with decorations set to TRUE (see gtk_window_set_decorated()),
- * the window is not click-through in Gnome.
- *
- * So: dock = 1 is good for Gnome, or call gtk_window_set_decorated(w,FALSE)
- * before this function.
- *
- */
-
-int createTransparentWindow(Display *display,
-    GtkWidget *transparentGTKWindow, int sticky, int below,
-    int dock, GdkWindow **gdk_window, Window *x11_window,
-    int *wantx, int *wanty) {
-
-    if (gdk_window) {
-        *gdk_window = NULL;
+    // Guard the outputs.
+    if (outputStormWindow) {
+        *outputStormWindow = NULL;
     }
     if (x11_window) {
         *x11_window = None;
     }
 
-    gtk_widget_set_app_paintable(transparentGTKWindow, TRUE);
+    // Implement window.
+    gtk_widget_set_app_paintable(inputStormWindow, TRUE);
 
-    // essential in Gnome:
-    gtk_window_set_decorated(GTK_WINDOW(transparentGTKWindow), FALSE);
+    // NOTE: with decorations set to TRUE the window is not
+    // click-through in Gnome. So: dock = 1 is good for Gnome, or call
+    // gtk_window_set_decorated(w, FALSE) before this function.
+    gtk_window_set_decorated(GTK_WINDOW(inputStormWindow), FALSE);
 
-    // essential everywhere:
-    gtk_window_set_accept_focus(GTK_WINDOW(transparentGTKWindow), FALSE);
+    gtk_window_set_accept_focus(GTK_WINDOW(inputStormWindow), FALSE);
 
-    // take care that 'below' and 'sticky' are taken care of in gtk_main loop:
-    g_signal_connect(transparentGTKWindow, "draw",
-        G_CALLBACK(resetVolatileTransparentWindowAttributes), NULL);
+    // 'below' and 'sticky' are taken care of in gtk_main loop.
+    g_signal_connect(inputStormWindow, "draw",
+        G_CALLBACK(setStormWindowAttributes), NULL);
 
-    // remove our things from transparentGTKWindow:
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_sticky");
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_below");
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_nobelow");
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
+    // Remove our things from inputStormWindow:
+    g_object_steal_data(G_OBJECT(inputStormWindow), "trans_sticky");
+    g_object_steal_data(G_OBJECT(inputStormWindow), "trans_nobelow");
+    g_object_steal_data(G_OBJECT(inputStormWindow), "trans_below");
+    g_object_steal_data(G_OBJECT(inputStormWindow), "trans_done");
 
-    static char somechar;
+    // Reset our things.  :-/
+    static char unusedResult;
     if (sticky) {
-        g_object_set_data(G_OBJECT(transparentGTKWindow), "trans_sticky", &somechar);
+        g_object_set_data(G_OBJECT(inputStormWindow),
+            "trans_sticky", &unusedResult);
     }
-
     switch (below) {
         case 0:
-            g_object_set_data(G_OBJECT(transparentGTKWindow), "trans_nobelow", &somechar);
+            g_object_set_data(G_OBJECT(inputStormWindow),
+                "trans_nobelow", &unusedResult);
             break;
         case 1:
-            g_object_set_data(G_OBJECT(transparentGTKWindow), "trans_below", &somechar);
+            g_object_set_data(G_OBJECT(inputStormWindow),
+                "trans_below", &unusedResult);
             break;
     }
 
-    /* To check if the display supports alpha channels, get the visual */
-    GdkScreen *screen = gtk_widget_get_screen(transparentGTKWindow);
+    // To check if the display supports alpha channels, get the visual.
+    GdkScreen* screen = gtk_widget_get_screen(inputStormWindow);
     if (!gdk_screen_is_composited(screen)) {
-        gtk_window_close(GTK_WINDOW(transparentGTKWindow));
+        gtk_window_close(GTK_WINDOW(inputStormWindow));
         return FALSE;
     }
 
     // Ensure the widget (the window, actually) can take RGBA
-    gtk_widget_set_visual(transparentGTKWindow, gdk_screen_get_rgba_visual(screen));
-
-    int winx, winy; // desired position of window
-    int winw, winh; // desired size of window
+    gtk_widget_set_visual(inputStormWindow,
+        gdk_screen_get_rgba_visual(screen));
 
     // set full screen if so desired:
     XWindowAttributes attr;
     XGetWindowAttributes(display, DefaultRootWindow(display), &attr);
 
-    gtk_widget_set_size_request(GTK_WIDGET(transparentGTKWindow),
+    gtk_widget_set_size_request(GTK_WIDGET(inputStormWindow),
         attr.width, attr.height);
 
-    winx = 0;
-    winy = 0;
-    winw = attr.width;
-    winh = attr.height;
+    gtk_widget_show_all(inputStormWindow);
 
-    gtk_widget_show_all(transparentGTKWindow);
-
-    // so that apps like this will ignore this window:
-    GdkWindow *gdkwin = gtk_widget_get_window(GTK_WIDGET(transparentGTKWindow));
+    // "So that apps like this will ignore this window."
+    // TODO: No longer required as a dock? 7/8/2024 mjc
+    GdkWindow* gdkStormWindow = gtk_widget_get_window(
+        GTK_WIDGET(inputStormWindow));
     if (dock) {
-        gdk_window_set_type_hint(gdkwin, GDK_WINDOW_TYPE_HINT_DOCK);
+        gdk_window_set_type_hint(gdkStormWindow,
+            GDK_WINDOW_TYPE_HINT_DOCK);
     }
 
-    gdk_window_show(gdkwin);
+    gdk_window_show(gdkStormWindow);
 
+    // Populate method result fields.
     if (x11_window) {
-        *x11_window = gdk_x11_window_get_xid(gdkwin);
-        XResizeWindow(display, *x11_window, winw, winh);
+        *x11_window = gdk_x11_window_get_xid(gdkStormWindow);
+        XResizeWindow(display, *x11_window, attr.width, attr.height);
         XFlush(display);
     }
 
-    if (gdk_window) {
-        *gdk_window = gdkwin;
+    if (outputStormWindow) {
+        *outputStormWindow = gdkStormWindow;
     }
 
-    *wantx = winx;
-    *wanty = winy;
-    usleep(200000); // seems sometimes to be necessary with nvidia
+    *wantx = 0;
+    *wanty = 0;
 
-    gtk_widget_hide(transparentGTKWindow);
-    gtk_widget_show_all(transparentGTKWindow);
+    // TODO: Seems sometimes to be necessary with nvidia.
+    // Lotsa code fix during thread inititaliztion by MJC may
+    // have fixed this. Remove and test.
 
-    gtk_window_move(GTK_WINDOW(transparentGTKWindow), 0, 0);
+    // usleep(200000);
+    // gtk_widget_hide(inputStormWindow);
+    // gtk_widget_show_all(inputStormWindow);
+    // gtk_window_move(GTK_WINDOW(inputStormWindow), 0, 0);
 
-    resetVolatileTransparentWindowAttributes(transparentGTKWindow);
-    g_object_steal_data(G_OBJECT(transparentGTKWindow), "trans_done");
+    // No longer slammed on the mainloop. Call once and forget.
+    setStormWindowAttributes(inputStormWindow);
 
+    g_object_steal_data(G_OBJECT(inputStormWindow), "trans_done");
     return TRUE;
 }
 
 /** *********************************************************************
+ **
+ ** for some reason, in some environments the 'below' and 'stick'
+ ** properties disappear. It works again, if we express our
+ ** wishes after starting gtk_main and the best place is in the
+ ** draw event.
  ** 
+ ** We want to reset the settings at least once to be sure.
+ ** Things like sticky and below should be stored in the
+ ** widget beforehand.
+ **
+ ** TODO:
+ ** Lotsa code fix during thread inititaliztion by MJC may
+ ** have fixed this. Tinker and test.
  **/
-// for some reason, in some environments the 'below' and 'stick' properties
-// disappear. It works again, if we express our wishes after starting gtk_main
-// and the best place is in the draw event.
-//
-// We want to reset the settings at least once to be sure.
-// Things like sticky and below should be stored in the widget beforehand.
-// Use the value of p itself, not what it points to.
-// Following the C standard, we have to use an array to subtract pointers.
+int setStormWindowAttributes(GtkWidget* stormWindow) {
+    enum { maxResetCount = 1, numResetAttributes }; 
+    static char maxResetAttributes[numResetAttributes];
 
-int resetVolatileTransparentWindowAttributes(GtkWidget *widget) {
-    // must be >= 0, and is equal to the number of times the settings
-    // will be done when called more than once
-    enum {
-        rep = 1,
-        nrep
-    };
-
-    static char something[nrep];
-
-    char *p = (char *) g_object_get_data(
-        G_OBJECT(widget), "trans_done");
-    if (!p) {
-        p = &something[0];
+    char* resultPointer = (char*)
+        g_object_get_data(G_OBJECT(stormWindow), "trans_done");
+    if (!resultPointer) {
+        resultPointer = &maxResetAttributes[0];
     }
-    if (p - &something[0] >= rep) {
+    if (resultPointer - &maxResetAttributes[0] >=
+            maxResetCount) {
         return false;
     }
-    p++;
-    g_object_set_data(G_OBJECT(widget), "trans_done", p);
+    g_object_set_data(G_OBJECT(stormWindow),
+        "trans_done", ++resultPointer);
 
-    // does not work as expected.
-    GdkWindow *gdk_window1 = gtk_widget_get_window(widget);
-    const int Usepassthru = 0;
-    if (Usepassthru) {
-        gdk_window_set_pass_through(gdk_window1, true);
-    } else {
-        cairo_region_t *cairo_region1 = cairo_region_create();
-        gdk_window_input_shape_combine_region(gdk_window1, cairo_region1, 0, 0);
+    // Create a new region, then combine it with the
+    // storm window, then destroy it.
+    // TODO: Why? ... "Does not work as expected."
+
+    GdkWindow* gdk_window1 = gtk_widget_get_window(stormWindow);
+    //const int Usepassthru = 0;
+    //if (Usepassthru) {
+    //    gdk_window_set_pass_through(gdk_window1, true);
+    //} else {
+        cairo_region_t* cairo_region1 = cairo_region_create();
+        gdk_window_input_shape_combine_region(gdk_window1,
+            cairo_region1, 0, 0);
         cairo_region_destroy(cairo_region1);
-    }
+    //}
 
-    if (!g_object_get_data(G_OBJECT(widget), "trans_nobelow")) {
-        if (g_object_get_data(G_OBJECT(widget), "trans_below")) {
-            setTransparentWindowBelow(GTK_WINDOW(widget));
+    if (!g_object_get_data(G_OBJECT(stormWindow), "trans_nobelow")) {
+        if (g_object_get_data(G_OBJECT(stormWindow), "trans_below")) {
+            setTransparentWindowBelow(GTK_WINDOW(stormWindow));
         } else {
-            setTransparentWindowAbove(GTK_WINDOW(widget));
+            setTransparentWindowAbove(GTK_WINDOW(stormWindow));
         }
     }
 
     // Set the Trans Window Sticky Flag.
-    if (g_object_get_data(G_OBJECT(widget), "trans_sticky")) {
-        gtk_window_stick(GTK_WINDOW(widget));
+    if (g_object_get_data(G_OBJECT(stormWindow), "trans_sticky")) {
+        gtk_window_stick(GTK_WINDOW(stormWindow));
     } else {
-        gtk_window_unstick(GTK_WINDOW(widget));
+        gtk_window_unstick(GTK_WINDOW(stormWindow));
     }
 
     return false;
@@ -228,7 +221,7 @@ int resetVolatileTransparentWindowAttributes(GtkWidget *widget) {
 /** *********************************************************************
  ** 
  **/
-void setTransparentWindowBelow(__attribute__((unused)) GtkWindow *window) {
+void setTransparentWindowBelow(__attribute__((unused)) GtkWindow* window) {
     gtk_window_set_keep_above(GTK_WINDOW(window), false);
     gtk_window_set_keep_below(GTK_WINDOW(window), true);
 }
@@ -236,7 +229,7 @@ void setTransparentWindowBelow(__attribute__((unused)) GtkWindow *window) {
 /** *********************************************************************
  ** 
  **/
-void setTransparentWindowAbove(__attribute__((unused)) GtkWindow *window) {
+void setTransparentWindowAbove(__attribute__((unused)) GtkWindow* window) {
     gtk_window_set_keep_below(GTK_WINDOW(window), false);
     gtk_window_set_keep_above(GTK_WINDOW(window), true);
 }

@@ -47,26 +47,6 @@
 /***********************************************************
  * Module Method stubs.
  */
-void setWidgetValuesFromPrefs();
-
-static void applyUICSSTheme();
-static void applyCSSToWindow(GtkWidget*,
-    GtkCssProvider*);
-
-static void setLabelText(GtkLabel*, const gchar*);
-
-extern void logAllWindowsStackedTopToBottom();
-
-static gboolean handleMainWindowStateEvents(GtkWidget*,
-    GdkEventWindowState*, gpointer);
-
-bool startQPickerDialog(char* callerTag,
-    char* colorAsString);
-
-int getQPickerRed();
-int getQPickerGreen();
-int getQPickerBlue();
-
 
 /***********************************************************
  * Module consts.
@@ -77,18 +57,18 @@ int getQPickerBlue();
 #define MODULE_EXPORT G_MODULE_EXPORT
 #endif
 
-
 #define PLASMASTORM_TITLE_STRING ""
 
-static bool isUserThreadRunning = false;
-static bool mOnUserThread = true;
-
 static GtkWidget* mMainWindow = NULL;
-static GtkCssProvider* mCSSProvider = NULL;
-static GtkStyleContext* mStyleContext = NULL;
+static GtkBuilder* builder = NULL;
 
 static char* lang[100];
-static GtkBuilder* builder = NULL;
+
+static bool mIsUserThreadRunning = false;
+static bool mOnUserThread = true;
+
+static GtkCssProvider* mCSSProvider = NULL;
+static GtkStyleContext* mStyleContext = NULL;
 
 
 /** *********************************************************************
@@ -133,14 +113,22 @@ static struct _button {
 
 
 /** *********************************************************************
+ ** MainWindow class getter / setters.
+ **/
+GtkWidget* getMainWindowOfUI() {
+    return mMainWindow;
+}
+
+/** *********************************************************************
  ** Main UI Form control.
  **/
 void initializeMainWindow() {
-    isUserThreadRunning = true;
+    mIsUserThreadRunning = true;
 
     builder = gtk_builder_new_from_string(mStringBuilder, -1);
     #ifdef HAVE_GETTEXT
-        gtk_builder_set_translation_domain(builder, PLASMASTORM_TEXT_DOMAIN);
+        gtk_builder_set_translation_domain(builder,
+            PLASMASTORM_TEXT_DOMAIN);
     #endif
     gtk_builder_connect_signals(builder, NULL);
 
@@ -165,13 +153,19 @@ void initializeMainWindow() {
     g_signal_connect(G_OBJECT(mMainWindow), "visibility-notify-event",
         G_CALLBACK(handleMainWindowStateEvents), NULL);
 
-    //
+    // Set theme & title & icon, then show window.
     applyUICSSTheme();
+
+    gtk_window_set_icon_from_file(GTK_WINDOW(mMainWindow),
+        "/usr/share/icons/hicolor/48x48/apps/"
+        "plasmadashboardicon.png", NULL);
 
     gtk_window_set_title(GTK_WINDOW(mMainWindow),
         PLASMASTORM_TITLE_STRING);
+
     gtk_widget_show_all(mMainWindow);
 
+    // More initialization.
     init_buttons();
     connectAllButtonSignals();
     init_pixmaps();
@@ -836,7 +830,7 @@ void init_buttons() {
  ** Set the UI Main Window Sticky Flag.
  **/
 void ui_set_sticky(int stickyFlag) {
-    if (!isUserThreadRunning) {
+    if (!mIsUserThreadRunning) {
         return;
     }
     if (stickyFlag) {
@@ -902,7 +896,7 @@ void applyUICSSTheme() {
 /** *********************************************************************
  ** Helper to set the style provider.
  **/
-static void applyCSSToWindow(GtkWidget* widget,
+void applyCSSToWindow(GtkWidget* widget,
     GtkCssProvider* cssstyleProvider) {
 
     gtk_style_context_add_provider(
@@ -921,14 +915,14 @@ static void applyCSSToWindow(GtkWidget* widget,
  ** "Busy" Style class getter / setters.
  **/
 void addBusyStyleClass() {
-    if (!isUserThreadRunning) {
+    if (!mIsUserThreadRunning) {
         return;
     }
     gtk_style_context_add_class(mStyleContext, "mAppBusy");
 }
 
 void removeBusyStyleClass() {
-    if (!isUserThreadRunning) {
+    if (!mIsUserThreadRunning) {
         return;
     }
     gtk_style_context_remove_class(mStyleContext, "mAppBusy");
@@ -938,14 +932,14 @@ void removeBusyStyleClass() {
  ** "Busy" Style class getter / setters.
  **/
 void addSliderNotAvailStyleClass() {
-    if (!isUserThreadRunning) {
+    if (!mIsUserThreadRunning) {
         return;
     }
     gtk_style_context_add_class(mStyleContext, "isNotAvail");
 }
 
 void removeSliderNotAvailStyleClass() {
-    if (!isUserThreadRunning) {
+    if (!mIsUserThreadRunning) {
         return;
     }
     gtk_style_context_remove_class(mStyleContext, "isNotAvail");
@@ -955,10 +949,14 @@ void removeSliderNotAvailStyleClass() {
  ** ... .
  **/
 char* ui_gtk_version() {
-    static char s[20];
-    snprintf(s, 20, "%d.%d.%d", gtk_get_major_version(),
-        gtk_get_minor_version(), gtk_get_micro_version());
-    return s;
+    static char versionString[20];
+
+    snprintf(versionString, 20, "%d.%d.%d",
+        gtk_get_major_version(),
+        gtk_get_minor_version(),
+        gtk_get_micro_version());
+
+    return versionString;
 }
 
 /** *********************************************************************
@@ -999,7 +997,7 @@ int isGtkVersionValid() {
  ** ... .
  **/
 void setLabelText(GtkLabel *label, const gchar *str) {
-    if (isUserThreadRunning) {
+    if (mIsUserThreadRunning) {
         gtk_label_set_text(label, str);
     }
 }

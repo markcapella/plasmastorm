@@ -24,14 +24,14 @@
 #include <gtk/gtk.h>
 #include "plasmastorm.h"
 
-extern int createTransparentWindow(Display *display,
-    GtkWidget *transparentGTKWindow, int sticky, int below,
-    int dock, GdkWindow **gdk_window, Window *x11_window,
-    int *wantx, int *wanty);
+extern int createTransparentWindow(Display* display,
+    GtkWidget* inputStormWindow, int sticky, int below,
+    int dock, GdkWindow** outputStormWindow, Window* x11_window,
+    int* wantx, int* wanty);
+
+int setStormWindowAttributes(GtkWidget* widget);
 
 extern void setTransparentWindowBelow(GtkWindow* window);
 extern void setTransparentWindowAbove(GtkWindow* window);
 
 extern void logAllWindowsStackedTopToBottom();
-
-extern void doLowerWindow(char* argString);

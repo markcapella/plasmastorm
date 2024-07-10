@@ -31,7 +31,7 @@
 #include <gtk/gtk.h>
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+        #include "config.h"
 #endif
 #include "xdo.h"
 
@@ -39,7 +39,6 @@
 /***********************************************************
  * Timer consts.
  */
-
 #define DO_LOAD_MONITOR_EVENT_TIME 0.1
 #define DO_DISPLAY_RECONFIGURATION_EVENT_TIME 0.5
 #define DO_HANDLE_X11_EVENT_TIME 0.1
@@ -87,6 +86,7 @@ typedef struct _StormItem {
 
         bool cyclic;
         bool isFrozen;
+        bool isVisible;
 
         bool fluff;
         float flufftimer;
@@ -144,7 +144,8 @@ typedef struct _StarCoordinate {
  * WinInfo object.
  */
 typedef struct _WinInfo {
-        Window window;
+
+        Window window;     // Window.
         long ws;           // workspace
 
         int x, y;          // x,y coordinates
