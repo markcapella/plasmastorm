@@ -26,11 +26,11 @@
 
 
 typedef struct _flags {
-    int Done;
-    int mHideMenu;
-    int mHaveFlagsChanged;
 
     char* Language;
+    int mHideMenu;
+    int mHaveFlagsChanged;
+    bool shutdownRequested;
 
     int ShowStormItems;
     int ComboStormShape;

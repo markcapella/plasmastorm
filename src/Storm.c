@@ -395,7 +395,7 @@ void setStormItemsPerSecond() {
  ** This method adds a batch of items to the Storm window.
  **/
 int doCreateStormShapeEvent() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return false;
     }
 
@@ -452,7 +452,7 @@ int doCreateStormShapeEvent() {
  ** This method stalls new StormItem creation events.
  **/
 int doStallCreateStormShapeEvent() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return false;
     }
 

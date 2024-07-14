@@ -151,7 +151,7 @@ void initFallenListWithDesktop() {
 void* execFallenThread() {
     // Loop until cancelled.
     while (1) {
-        if (Flags.Done) {
+        if (Flags.shutdownRequested) {
             pthread_exit(NULL);
         }
 
@@ -306,7 +306,7 @@ int canFallenConsumeStormItem(FallenItem *fallen) {
  **/
 int isFallenOnVisibleWorkspace(FallenItem *fallen) {
     if (fallen) {
-        for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
+        for (int i = 0; i < mGlobal.visibleWorkspaceCount; i++) {
             if (mGlobal.workspaceArray[i] == fallen->winInfo.ws) {
                 return true;
             }

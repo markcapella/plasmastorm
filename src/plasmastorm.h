@@ -186,11 +186,18 @@ typedef struct _FallenItem {
 #define MAXIMUM_GLOBAL_WORKSPACES 100
 
 extern struct _mGlobal {
+
+        Display* display;
+        xdo_t* xdo;
+
+        long currentWS;
+        long chosenWorkSpace;
+        int visibleWorkspaceCount;
+        long workspaceArray[MAXIMUM_GLOBAL_WORKSPACES];
+
         bool isStormWindowTransparent;
         char* DesktopSession;
 
-        bool isCompizCompositor;
-        int isWaylandDisplay;
         int windowsWereDraggedOrMapped;
         bool languageChangeRestart;
 
@@ -216,6 +223,8 @@ extern struct _mGlobal {
         unsigned int MaxStormItemHeight;
         unsigned int MaxStormItemWidth;
         int StormItemCount;
+        int ComboStormShape;
+
         int FluffedStormItemCount;
         int RemoveFluff;
 
@@ -227,22 +236,14 @@ extern struct _mGlobal {
         double windWhirlTimer;
         double windWhirlTimerStart;
 
-        int WindowOffsetWindowTops;
-        int WindowOffsetX;
+        int windowOffsetY;
+        int windowOffsetX;
+
         int MaxDesktopFallenDepth;
         FallenItem* FallenFirst;
 
         double cpufactor;
         float WindowScale;
-
-        int NVisWorkSpaces;
-        long CWorkSpace;
-        long ChosenWorkSpace;
-        long workspaceArray[MAXIMUM_GLOBAL_WORKSPACES];
-
-        Display* display;
-        xdo_t* xdo;
-        int ComboStormShape;
 
 
 } mGlobal;

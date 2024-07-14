@@ -23,16 +23,21 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+// X11 headers.
 #include <X11/Intrinsic.h>
 
+// GTK headers.
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
+// Plasmastorm headers.
+#include "plasmastorm.h"
+
+#include "Application.h"
 #include "ColorCodes.h"
 #include "Fallen.h"
 #include "Prefs.h"
 #include "mygettext.h"
-#include "plasmastorm.h"
 #include "safeMalloc.h"
 #include "transwindow.h"
 #include "utils.h"
@@ -40,7 +45,11 @@
 #include "x11WindowHelper.h"
 #include "xdo.h"
 
-//**
+
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
+
 // ActiveApp member helper methods.
 Window mActiveAppWindow = None;
 const int mINVALID_POSITION = -1;
@@ -58,14 +67,13 @@ Window mActiveAppDragWindowCandidate = None;
 static int mWinInfoListLength = 0;
 static WinInfo* mWinInfoList = NULL;
 
-/** *********************************************************************
- ** Module globals and consts.
- **/
 const int mWindowXOffset = 4; // magic
 const int mWindowWOffset = -8; // magic
 
 // Workspace on which transparent window is placed.
-static long TransWorkSpace = -SOMENUMBER;
+bool mIsPreviousWSValueValid = false;
+long mPreviousWS = -1;
+
 
 /** *********************************************************************
  ** This method ...
@@ -89,8 +97,8 @@ int WorkspaceActive() {
         return 1;
     }
 
-    for (int i = 0; i < mGlobal.NVisWorkSpaces; i++) {
-        if (mGlobal.workspaceArray[i] == mGlobal.ChosenWorkSpace) {
+    for (int i = 0; i < mGlobal.visibleWorkspaceCount; i++) {
+        if (mGlobal.workspaceArray[i] == mGlobal.chosenWorkSpace) {
             return 1;
         }
     }
@@ -122,8 +130,8 @@ int do_sendevent() {
  ** This method TODO:
  **/
 void udpateWorkspaceInfo() {
-    mGlobal.NVisWorkSpaces = 1;
-    mGlobal.workspaceArray[0] = mGlobal.CWorkSpace;
+    mGlobal.visibleWorkspaceCount = 1;
+    mGlobal.workspaceArray[0] = mGlobal.currentWS;
 }
 
 /** *********************************************************************
@@ -185,12 +193,8 @@ void updateDisplayDimensions() {
  ** our internal X11 Windows array. (Laggy huh).
  **/
 int updateWindowsList() {
-    static long PrevWorkSpace = -123;
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return false;
-    }
-    if (!Flags.KeepFallenOnWindows) {
-        return true;
     }
 
     static int lockcounter = 0;
@@ -211,49 +215,32 @@ int updateWindowsList() {
     }
     mGlobal.windowsWereDraggedOrMapped = 0;
 
-    // Sanity check current workspace.
-    long currentWorkSpace = getCurrentWorkspace();
-    if (currentWorkSpace < 0) {
-        Flags.Done = 1;
-        unlockFallenSemaphore();
-        fprintf(stdout, "plasmastorm: Current Workspace "
-            "unavailable - FATAL.\n");
-        return true;
-    }
-
     // Update on Workspace change.
-    mGlobal.CWorkSpace = currentWorkSpace;
-    if (currentWorkSpace != PrevWorkSpace) {
-        PrevWorkSpace = currentWorkSpace;
+    mGlobal.currentWS = getCurrentWorkspace();
+
+    if (!mIsPreviousWSValueValid) {
+        mIsPreviousWSValueValid = true;
+        mPreviousWS = mGlobal.currentWS;
         udpateWorkspaceInfo();
+    } else {
+        if (mGlobal.currentWS != mPreviousWS) {
+            mPreviousWS = mGlobal.currentWS;
+            udpateWorkspaceInfo();
+        }
     }
 
+    // Early exit during dragging.
     if (isWindowBeingDragged()) {
         updateFallenRegions();
         unlockFallenSemaphore();
         return true;
     }
 
-    // Update windows list. Free any current.
-    // Get new list, error if none.
+    // Update windows list.
     getWinInfoList();
-
     for (int i = 0; i < mWinInfoListLength; i++) {
-        mWinInfoList[i].x += mGlobal.WindowOffsetX - mGlobal.StormWindowX;
-        mWinInfoList[i].y += mGlobal.WindowOffsetWindowTops - mGlobal.StormWindowY;
-    }
-
-    WinInfo* winInfo = findWinInfoByWindowId(mGlobal.StormWindow);
-    if (mGlobal.isStormWindowTransparent && winInfo) {
-        if (winInfo->ws > 0) {
-            TransWorkSpace = winInfo->ws;
-        }
-    }
-
-    if (mGlobal.StormWindow != mGlobal.Rootwindow) {
-        if (!mGlobal.isStormWindowTransparent && !winInfo) {
-            Flags.Done = 1;
-        }
+        mWinInfoList[i].x += mGlobal.windowOffsetX - mGlobal.StormWindowX;
+        mWinInfoList[i].y += mGlobal.windowOffsetY - mGlobal.StormWindowY;
     }
 
     updateFallenRegions();
@@ -739,7 +726,7 @@ bool isAreaClippedByWindow(int xPos, int yPos,
 
     for (int i = 0; i < mWinInfoListLength; i++) {
         if (!winInfo->sticky && (winInfo->ws >= 0 &&
-            winInfo->ws != mGlobal.ChosenWorkSpace)) {
+            winInfo->ws != mGlobal.chosenWorkSpace)) {
             winInfo++;
             continue;
         }
@@ -820,7 +807,7 @@ void updateFallenRegions() {
         if (fallen) {
             fallen->winInfo = *addWin;
             if ((!fallen->winInfo.sticky) &&
-                fallen->winInfo.ws != mGlobal.CWorkSpace) {
+                fallen->winInfo.ws != mGlobal.currentWS) {
                 eraseFallenOnDisplay(fallen, 0, fallen->w);
             }
         }

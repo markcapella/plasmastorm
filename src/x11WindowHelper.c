@@ -296,73 +296,57 @@ long int getWindowWorkspace(Window window) {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method has the x-y coordinates of the desktop/workspace,
+ ** which we hash into a comparable result.
  **/
 long int getCurrentWorkspace() {
+    int resultCode = -1;
 
-    // We have the x-y coordinates of the workspace, we hussle this
-    // into one long number and return as the result.
-    if (mGlobal.isCompizCompositor) {
-        Atom type;
-        int format;
-        unsigned long nitems, unusedBytes;
-        unsigned char *properties = NULL;
+    Atom type;
+    int format;
+    unsigned long unusedNumber, unusedBytes;
 
-        XGetWindowProperty(mGlobal.display, DefaultRootWindow(mGlobal.display),
-            XInternAtom(mGlobal.display, "_NET_DESKTOP_VIEWPORT", False),
-            0, 2, False, AnyPropertyType, &type, &format, &nitems,
-            &unusedBytes, &properties);
+    // The index of the current desktop. This is always
+    // an integer between 0 and _NET_NUMBER_OF_DESKTOPS - 1.
 
-        int resultCode = -1;
+    unsigned char* properties = NULL;
+    XGetWindowProperty(mGlobal.display, DefaultRootWindow(mGlobal.display),
+        XInternAtom(mGlobal.display, "_NET_CURRENT_DESKTOP", False),
+        0, 1, False, AnyPropertyType, &type, &format,
+        &unusedNumber, &unusedBytes,
+        &properties);
 
-        if (type == XA_CARDINAL && nitems == 2) {
-            resultCode = ((long *) (void *) properties)[0] +
-                (((long *) (void *) properties)[1] << 16);
-        }
-
+    if (type == XA_CARDINAL) {
+        resultCode = *(long*) (void*) properties;
         if (properties) {
             XFree(properties);
         }
         return resultCode;
     }
-
-    Atom type;
-    int format;
-    unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
-
-    XGetWindowProperty(mGlobal.display, DefaultRootWindow(mGlobal.display),
-        XInternAtom(mGlobal.display, "_NET_CURRENT_DESKTOP", False),
-        0, 1, False, AnyPropertyType, &type, &format, &nitems,
-        &unusedBytes, &properties);
-
-    int resultCode = -1;
-
-    if (type != XA_CARDINAL) {
-        if (properties) {
-            XFree(properties);
-        }
-        XGetWindowProperty(mGlobal.display,
-            DefaultRootWindow(mGlobal.display),
-            XInternAtom(mGlobal.display, "_WIN_WORKSPACE", False),
-            0, 1, False, AnyPropertyType, &type, &format, &nitems,
-            &unusedBytes, &properties);
-    }
-
-    // In Wayland, the actual number of current workspace can only
-    // be obtained if user has done some workspace-switching
-    // we return zero if the workspace number cannot be determined.
-    if (type == XA_CARDINAL) {
-        resultCode = *(long *) (void *) properties;
-    } else {
-        if (mGlobal.isWaylandDisplay) {
-            resultCode = 0;
-        }
-    }
-    
     if (properties) {
         XFree(properties);
     }
+
+    // Are we GNOME ? _WIN_WORKSPACE
+
+    unsigned char* propertiesWin = NULL;
+    XGetWindowProperty(mGlobal.display, DefaultRootWindow(mGlobal.display),
+        XInternAtom(mGlobal.display, "_WIN_WORKSPACE", False),
+        0, 1, False, AnyPropertyType, &type, &format,
+        &unusedNumber, &unusedBytes,
+        &propertiesWin);
+
+    if (type == XA_CARDINAL) {
+        resultCode = *(long*) (void*) propertiesWin;
+        if (propertiesWin) {
+            XFree(propertiesWin);
+        }
+        return resultCode;
+    }
+    if (propertiesWin) {
+        XFree(propertiesWin);
+    }
+
     return resultCode;
 }
 

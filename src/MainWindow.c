@@ -28,14 +28,21 @@
 #include <string.h>
 #include <unistd.h>
 
+// X11 headers.
+#include <X11/Intrinsic.h>
+
+// GTK headers.
 #include <gtk/gtk.h>
 
+// Plasmastorm headers.
+#include "plasmastorm.h"
+
+#include "Application.h"
 #include "ClockHelper.h"
 #include "generatedGladeIncludes.h"
 #include "MainWindow.h"
 #include "mygettext.h"
 #include "pixmaps.h"
-#include "plasmastorm.h"
 #include "Prefs.h"
 #include "safeMalloc.h"
 #include "Storm.h"
@@ -1004,7 +1011,7 @@ void setLabelText(GtkLabel *label, const gchar *str) {
 
 MODULE_EXPORT
 void onClickedQuitApplication() {
-    Flags.Done = 1;
+    Flags.shutdownRequested = true;
 }
 
 /** *********************************************************************
@@ -1043,14 +1050,15 @@ void respondToLanguageSettingsChanges() {
     if (!strcmp(Flags.Language, OldFlags.Language)) {
         return;
     }
-
     free(OldFlags.Language);
     OldFlags.Language = strdup(Flags.Language);
     Flags.mHaveFlagsChanged++;
 
+    printf("\nplasmastorm: Restarting due to language change.\n");
+
     setLanguageEnvironmentVar();
     mGlobal.languageChangeRestart = true;
-    Flags.Done = 1;
+    Flags.shutdownRequested = true;
 }
 
 /** *********************************************************************

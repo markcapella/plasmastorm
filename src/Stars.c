@@ -154,7 +154,7 @@ void eraseStarsFrame() {
  ** Erase and Draw cycles.
  **/
 int updateStarsFrame() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return FALSE;
     }
     if (!WorkspaceActive()) {

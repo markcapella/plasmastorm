@@ -58,7 +58,7 @@ void initPrefsModule(int argc, char* argv[]) {
  ** This method sets Pref default values.
  **/
 void setAllPrefDefaultValues() {
-    DefaultFlags.Done = 0;
+    DefaultFlags.shutdownRequested = 0;
     DefaultFlags.mHideMenu = 0;
     DefaultFlags.mHaveFlagsChanged = 0;
 
@@ -101,7 +101,7 @@ void setAllPrefDefaultValues() {
  ** This method ...
  **/
 void setAllPrefsFromDefaultValues() {
-    Flags.Done = DefaultFlags.Done;
+    Flags.shutdownRequested = DefaultFlags.shutdownRequested;
     Flags.mHideMenu = DefaultFlags.mHideMenu;
     Flags.mHaveFlagsChanged = DefaultFlags.mHaveFlagsChanged;
 

@@ -22,7 +22,7 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmastorm], [2024.07.10], [markcapella@twcny.rr.com])
+AC_INIT([plasmastorm], [2024.07.13], [markcapella@twcny.rr.com])
 AC_CONFIG_SRCDIR([src/plasmastorm.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
@@ -81,7 +81,6 @@ AC_SUBST([DATE])
 
 # gettext
 AM_GNU_GETTEXT([external])
-#AM_GNU_GETTEXT_VERSION([0.21])
 AC_SUBST([LOCALEDIR],[$localedir])
 AM_CONDITIONAL([USE_NLS],[test "x$USE_NLS" = "xyes"])
 
@@ -124,6 +123,7 @@ AC_PROG_INSTALL
 AC_PROG_RANLIB
 
 LIBS="-lm"
+
 # Checks for header files.
 AC_PATH_X
 AC_CHECK_HEADERS([assert.h ctype.h math.h pthread.h signal.h],[],AC_MSG_ERROR([Exiting]))
@@ -131,7 +131,7 @@ AC_CHECK_HEADERS([stdarg.h stdio.h stdlib.h string.h unistd.h],[],AC_MSG_ERROR([
 AC_CHECK_HEADERS([execinfo.h])
 
 AC_LANG_PUSH([C++])
-AC_CHECK_HEADERS([iostream],[],AC_MSG_ERROR([Check your C++ compiler. Exiting]))
+AC_CHECK_HEADERS([iostream], [], AC_MSG_ERROR([Check your C++ compiler. Exiting]))
 AC_CHECK_HEADERS([unordered_map])
 AC_CHECK_HEADERS([unordered_set])
 AC_LANG_POP([C++])

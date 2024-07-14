@@ -84,7 +84,7 @@ int getBlowoffEventCount() {
  ** This method processes Blowoff events.
  **/
 int handleBlowoffEvent() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return false;
     }
     if (!WorkspaceActive() || !Flags.ShowBlowoff) {

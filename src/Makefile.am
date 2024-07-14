@@ -56,7 +56,7 @@ libxdo_a_SOURCES = xdo.h xdo.c \
 	XDOVersion.h
 
 plasmastorm_SOURCES = \
-		Application.c \
+		Application.h Application.c \
 		Blowoff.h Blowoff.c \
 		ClockHelper.h ClockHelper.c \
 		ColorPicker.cpp \

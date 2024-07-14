@@ -106,7 +106,7 @@ void setWindWhirlTimers() {
  ** This method performs a short wind event.
  **/
 int doShortWindEvent() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return false;
     }
 
@@ -164,7 +164,7 @@ int doShortWindEvent() {
  ** all storm items get this speed.
  **/
 int doLongWindEvent() {
-    if (Flags.Done) {
+    if (Flags.shutdownRequested) {
         return false;
     }
 
