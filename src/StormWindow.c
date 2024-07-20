@@ -26,8 +26,122 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-#include "transwindow.h"
-#include "windows.h"
+#include "Application.h"
+#include "ColorCodes.h"
+#include "Prefs.h"
+#include "StormWindow.h"
+#include "Windows.h"
+#include "utils.h"
+
+
+/** *********************************************************************
+ ** Module globals and consts.
+ **/
+
+static int wantx = 0;
+static int wanty = 0;
+static int mIsSticky = 0;
+
+/** *********************************************************************
+ ** This method ...
+ **/
+void createStormWindow() {
+    mGlobal.Rootwindow =
+        DefaultRootWindow(mGlobal.display);
+
+    mGlobal.isStormWindowTransparent = false;
+    mGlobal.isCairoAvailable = false;
+
+    mGlobal.hasDestopWindow = true;
+
+    // Try to create a transparent clickthrough window.
+    GtkWidget* stormWindowWidget =
+        gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
+    gtk_widget_set_can_focus(stormWindowWidget, TRUE);
+    gtk_window_set_decorated(GTK_WINDOW(stormWindowWidget), FALSE);
+    gtk_window_set_type_hint(GTK_WINDOW(stormWindowWidget),
+        GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+
+    // Create transparent StormWindow widget.
+    Window stormX11Window;
+    GdkWindow* stormGdkWindow;
+
+    if (createTransparentWindow(mGlobal.display, stormWindowWidget,
+        Flags.AllWorkspaces, true, &stormGdkWindow, &stormX11Window,
+        &wantx, &wanty)) {
+
+        mGlobal.gtkStormWindowWidget = stormWindowWidget;
+        mGlobal.isStormWindowTransparent = true;
+        mGlobal.StormWindow = stormX11Window;
+
+        gtk_window_set_icon_from_file(GTK_WINDOW(mGlobal.gtkStormWindowWidget),
+            "/usr/share/icons/hicolor/48x48/apps/"
+            "plasmastormicon.png", NULL);
+
+        GtkWidget* drawing_area = gtk_drawing_area_new();
+        gtk_container_add(GTK_CONTAINER(mGlobal.gtkStormWindowWidget),
+            drawing_area);
+
+        g_signal_connect(mGlobal.gtkStormWindowWidget, "draw", G_CALLBACK(
+            handleTransparentWindowDrawEvents), NULL);
+
+        printf("%sTransparent StormWindow created.%s\n\n",
+            COLOR_NORMAL, COLOR_NORMAL);
+
+    } else {
+        mGlobal.isCairoAvailable = true;
+
+        // Find global StormWindow based on desktop.
+        setDesktopSession();
+
+        Window desktopAsStormWindow = None;
+        if (strncmp(mGlobal.DesktopSession, "LXDE", 4) == 0) {
+            desktopAsStormWindow = largest_window_with_name(
+                mGlobal.xdo, "^pcmanfm$");
+        }
+        if (!desktopAsStormWindow) {
+            desktopAsStormWindow = largest_window_with_name(
+            mGlobal.xdo, "^Desktop$");
+        }
+        if (!desktopAsStormWindow) {
+            desktopAsStormWindow = mGlobal.Rootwindow;
+        }
+        mGlobal.StormWindow = desktopAsStormWindow;
+
+        printf("\n%splasmastorm:application: createStormWindow() "
+            "Transparent click-thru StormWindow not available.%s\n\n",
+            COLOR_YELLOW, COLOR_NORMAL);
+    }
+
+    // Start initial window screen position.
+    if (mGlobal.isCairoAvailable) {
+        handleX11CairoDisplay();
+        mGlobal.cairoWindowGuid = addMethodWithArgToMainloop(PRIORITY_HIGH,
+            DO_CAIRO_DRAW_EVENT_TIME, drawCairoWindow, mGlobal.cairoWindow);
+        mGlobal.windowOffsetX = 0;
+        mGlobal.windowOffsetY = 0;
+    } else {
+        mGlobal.windowOffsetX = wantx;
+        mGlobal.windowOffsetY = wanty;
+    }
+
+    mGlobal.StormWindowX = wantx;
+    mGlobal.StormWindowY = wanty;
+
+    if (!mGlobal.isCairoAvailable) {
+        xdo_move_window(mGlobal.xdo, mGlobal.StormWindow,
+            mGlobal.StormWindowX, mGlobal.StormWindowY);
+    }
+    xdo_wait_for_window_map_state(mGlobal.xdo,
+        mGlobal.StormWindow, IsViewable);
+
+    initDisplayDimensions();
+
+    setStormWindowScale();
+
+    fflush(stdout);
+}
 
 /** *********************************************************************
  ** creates transparent window using gtk3/cairo.
@@ -37,14 +151,12 @@
  ** below:       (input)  2: above all other windows.
  **                       1: below all other windows.
  **                       0: no action.
- ** dock:        (input)  Make it a 'dock' window: no decoration and
- **                       not interfering with app.
  **
  ** outputStormWindow:  (output) GdkWindow created
  ** x11_window:         (output) Window X11 created: (output)
  **/
-int createTransparentWindow(Display* display,
-    GtkWidget* inputStormWindow, int sticky, int below, int dock,
+bool createTransparentWindow(Display* display,
+    GtkWidget* inputStormWindow, int sticky, int below,
     GdkWindow** outputStormWindow, Window* x11_window,
     int* wantx, int* wanty) {
 
@@ -58,12 +170,7 @@ int createTransparentWindow(Display* display,
 
     // Implement window.
     gtk_widget_set_app_paintable(inputStormWindow, TRUE);
-
-    // NOTE: with decorations set to TRUE the window is not
-    // click-through in Gnome. So: dock = 1 is good for Gnome, or call
-    // gtk_window_set_decorated(w, FALSE) before this function.
     gtk_window_set_decorated(GTK_WINDOW(inputStormWindow), FALSE);
-
     gtk_window_set_accept_focus(GTK_WINDOW(inputStormWindow), FALSE);
 
     // 'below' and 'sticky' are taken care of in gtk_main loop.
@@ -97,7 +204,7 @@ int createTransparentWindow(Display* display,
     GdkScreen* screen = gtk_widget_get_screen(inputStormWindow);
     if (!gdk_screen_is_composited(screen)) {
         gtk_window_close(GTK_WINDOW(inputStormWindow));
-        return FALSE;
+        return false;
     }
 
     // Ensure the widget (the window, actually) can take RGBA
@@ -107,51 +214,39 @@ int createTransparentWindow(Display* display,
     // set full screen if so desired:
     XWindowAttributes attr;
     XGetWindowAttributes(display, DefaultRootWindow(display), &attr);
-
     gtk_widget_set_size_request(GTK_WIDGET(inputStormWindow),
         attr.width, attr.height);
 
     gtk_widget_show_all(inputStormWindow);
 
-    // "So that apps like this will ignore this window."
-    // TODO: No longer required as a dock? 7/8/2024 mjc
-    GdkWindow* gdkStormWindow = gtk_widget_get_window(
-        GTK_WIDGET(inputStormWindow));
-    if (dock) {
-        gdk_window_set_type_hint(gdkStormWindow,
-            GDK_WINDOW_TYPE_HINT_DOCK);
-    }
-
-    gdk_window_show(gdkStormWindow);
+    // Set as dock.
+    //GdkWindow* dockWindow = gtk_widget_get_window(
+    //    GTK_WIDGET(inputStormWindow));
+    //gdk_window_set_type_hint(dockWindow,
+    //    GDK_WINDOW_TYPE_HINT_DOCK);
+    //gdk_window_show(dockWindow);
 
     // Populate method result fields.
+    if (outputStormWindow) {
+        *outputStormWindow = gtk_widget_get_window(
+            GTK_WIDGET(inputStormWindow));
+    }
     if (x11_window) {
-        *x11_window = gdk_x11_window_get_xid(gdkStormWindow);
+        *x11_window = gdk_x11_window_get_xid(
+            gtk_widget_get_window(GTK_WIDGET(inputStormWindow)));
         XResizeWindow(display, *x11_window, attr.width, attr.height);
         XFlush(display);
     }
-
-    if (outputStormWindow) {
-        *outputStormWindow = gdkStormWindow;
-    }
-
     *wantx = 0;
     *wanty = 0;
 
-    // TODO: Seems sometimes to be necessary with nvidia.
-    // Lotsa code fix during thread inititaliztion by MJC may
-    // have fixed this. Remove and test.
-
-    // usleep(200000);
-    // gtk_widget_hide(inputStormWindow);
-    // gtk_widget_show_all(inputStormWindow);
-    // gtk_window_move(GTK_WINDOW(inputStormWindow), 0, 0);
-
-    // No longer slammed on the mainloop. Call once and forget.
+    // No longer slammed on the mainloop.
+    // Call once and forget.
     setStormWindowAttributes(inputStormWindow);
 
-    g_object_steal_data(G_OBJECT(inputStormWindow), "trans_done");
-    return TRUE;
+    g_object_steal_data(G_OBJECT(inputStormWindow),
+        "trans_done");
+    return true;
 }
 
 /** *********************************************************************
@@ -232,4 +327,45 @@ void setTransparentWindowBelow(__attribute__((unused)) GtkWindow* window) {
 void setTransparentWindowAbove(__attribute__((unused)) GtkWindow* window) {
     gtk_window_set_keep_below(GTK_WINDOW(window), false);
     gtk_window_set_keep_above(GTK_WINDOW(window), true);
+}
+
+/** *********************************************************************
+ ** Set the Transparent Window Sticky Flag.
+ **/
+void setStormWindowSticky(bool isSticky) {
+    mIsSticky = isSticky;
+    if (mIsSticky) {
+        gtk_window_stick(GTK_WINDOW(
+            mGlobal.gtkStormWindowWidget));
+    } else {
+        gtk_window_unstick(GTK_WINDOW(
+            mGlobal.gtkStormWindowWidget));
+    }
+}
+
+/** *********************************************************************
+ ** This method id the draw callback.
+ **/
+gboolean handleTransparentWindowDrawEvents(
+    __attribute__((unused)) GtkWidget *widget, cairo_t *cr,
+    __attribute__((unused)) gpointer user_data) {
+
+    drawCairoWindowInternal(cr);
+    return FALSE;
+}
+
+/** *********************************************************************
+ ** This method ... TODO: Huh?
+    // assuming a standard screen of 1024x576, we suggest to use the scalefactor
+    // WindowScale
+ **/
+void setStormWindowScale() {
+    float x = mGlobal.StormWindowWidth / 1000.0;
+    float y = mGlobal.StormWindowHeight / 576.0;
+
+    if (x < y) {
+        mGlobal.WindowScale = x;
+    } else {
+        mGlobal.WindowScale = y;
+    }
 }

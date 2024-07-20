@@ -76,12 +76,12 @@ plasmastorm_SOURCES = \
 		splineHelper.h splineHelper.c \
 		Stars.h Stars.c \
 		Storm.h Storm.c \
-		transwindow.h transwindow.c \
+		StormWindow.h StormWindow.c \
 		ui.glade \
 		utils.h utils.c \
 		versionHelper.h \
 		Wind.c Wind.h \
-		windows.h windows.c \
+		Windows.h Windows.c \
 		x11WindowHelper.h x11WindowHelper.c \
 		xpmHelper.h xpmHelper.c
 

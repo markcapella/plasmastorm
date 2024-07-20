@@ -28,7 +28,7 @@
 #include "plasmastorm.h"
 #include "safeMalloc.h"
 #include "utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /** *********************************************************************

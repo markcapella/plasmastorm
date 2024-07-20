@@ -54,7 +54,7 @@ extern GdkRGBA getNextStormShapeColorAsRGB();
 
 bool isStormItemFallen(StormItem*,
     int xPosition, int yPosition);
-bool isStormItemBehindWindow(StormItem*,
+bool isStormItemVisible(StormItem*,
     int xPosition, int yPosition);
 
 void pushStormItemIntoItemset(StormItem*);

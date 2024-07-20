@@ -756,8 +756,8 @@ plasmastorm-main.o: main.c /usr/include/stdc-predef.h ../config.h \
  /usr/include/libintl.h Prefs.h safeMalloc.h /usr/include/gsl/gsl_errno.h \
  /usr/include/gsl/gsl_spline.h /usr/include/gsl/gsl_interp.h \
  /usr/include/gsl/gsl_inline.h rootWindowHelper.h \
- /usr/include/X11/Xatom.h Storm.h transwindow.h MainWindow.h utils.h \
- /usr/include/execinfo.h versionHelper.h Wind.h windows.h \
+ /usr/include/X11/Xatom.h Storm.h StormWindow.h MainWindow.h utils.h \
+ /usr/include/execinfo.h versionHelper.h Wind.h Windows.h \
  x11WindowHelper.h
 /usr/include/stdc-predef.h:
 ../config.h:
@@ -1611,11 +1611,11 @@ safeMalloc.h:
 rootWindowHelper.h:
 /usr/include/X11/Xatom.h:
 Storm.h:
-transwindow.h:
+StormWindow.h:
 MainWindow.h:
 utils.h:
 /usr/include/execinfo.h:
 versionHelper.h:
 Wind.h:
-windows.h:
+Windows.h:
 x11WindowHelper.h:

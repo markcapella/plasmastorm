@@ -29,7 +29,7 @@
 #include "Fallen.h"
 #include "Prefs.h"
 #include "plasmastorm.h"
-#include "windows.h"
+#include "Windows.h"
 #include "utils.h"
 
 // static int handleBlowoffEvent();

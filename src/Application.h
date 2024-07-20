@@ -51,31 +51,35 @@ bool isWindowBeingDragged();
 /***********************************************************
  * Module Method stubs.
  */
-void HandleCpuFactor();
-void RestartDisplay();
-void appShutdownHook(int);
-int handleX11ErrorEvent(Display*, XErrorEvent*);
-int drawCairoWindow(void*);
-void handleX11CairoDisplay();
-void addWindowDrawMethodToMainloop();
-void drawCairoWindowInternal(cairo_t*);
-int drawTransparentWindow(gpointer);
-gboolean handleTransparentWindowDrawEvents(
-    GtkWidget*, cairo_t*, gpointer);
-void createStormWindow();
-void SetWindowScale();
-int handlePendingX11Events();
 void mybindtestdomain();
-void DoAllWorkspaces();
-void setmGlobalDesktopSession();
-int doAllUISettingsUpdates();
-int handleDisplayReconfigurationChange();
-// static ends
 
+int drawTransparentWindow(gpointer);
 void setTransparentWindowAbove(GtkWindow* window);
-void setAppAboveOrBelowAllWindows();
-int updateWindowsList();
-// extern ends
 
+void setAppAboveOrBelowAllWindows();
+void addWindowDrawMethodToMainloop();
+
+void RestartDisplay();
+
+void appShutdownHook(int);
+
+void handleX11CairoDisplay();
+int handlePendingX11Events();
+int handleX11ErrorEvent(Display*, XErrorEvent*);
+
+int drawCairoWindow(void*);
+void drawCairoWindowInternal(cairo_t*);
+
+int doAllUISettingsUpdates();
 void respondToAdvancedSettingsChanges();
+
+void HandleCpuFactor();
+
+void respondToWorkspaceSettingsChange();
+void setDesktopSession();
+
+int handleDisplayReconfigurationChange();
+
+int updateWindowsList();
+
 void uninitQPickerDialog();

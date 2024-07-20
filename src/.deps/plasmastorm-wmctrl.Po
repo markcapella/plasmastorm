@@ -734,7 +734,7 @@ plasmastorm-wmctrl.o: x11WindowHelper.c /usr/include/stdc-predef.h x11WindowHelp
  /usr/include/gtk-3.0/gtk/gtk-autocleanups.h ../config.h safeMalloc.h \
  /usr/include/gsl/gsl_errno.h /usr/include/gsl/gsl_types.h \
  /usr/include/gsl/gsl_spline.h /usr/include/gsl/gsl_interp.h \
- /usr/include/gsl/gsl_inline.h windows.h /usr/include/X11/Xatom.h rootWindowHelper.h
+ /usr/include/gsl/gsl_inline.h Windows.h /usr/include/X11/Xatom.h rootWindowHelper.h
 /usr/include/stdc-predef.h:
 x11WindowHelper.h:
 /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h:
@@ -1550,6 +1550,6 @@ safeMalloc.h:
 /usr/include/gsl/gsl_spline.h:
 /usr/include/gsl/gsl_interp.h:
 /usr/include/gsl/gsl_inline.h:
-windows.h:
+Windows.h:
 /usr/include/X11/Xatom.h:
 rootWindowHelper.h:

@@ -187,44 +187,14 @@ typedef struct _FallenItem {
 
 extern struct _mGlobal {
 
-        Display* display;
-        xdo_t* xdo;
-
-        long currentWS;
-        long chosenWorkSpace;
-        int visibleWorkspaceCount;
-        long workspaceArray[MAXIMUM_GLOBAL_WORKSPACES];
-
-        bool isStormWindowTransparent;
         char* DesktopSession;
-
         int windowsWereDraggedOrMapped;
         bool languageChangeRestart;
 
-        // mGlobal.Rootwindow or mGlobal.StormWindow.
-        Bool hasDestopWindow;
-
-        // mGlobal.Rootwindow.
-        Window Rootwindow;
-        int Xroot;
-        int Yroot;
-        unsigned int Wroot;
-        unsigned int Hroot;
-
-        // mGlobal.StormWindow.
         Window StormWindow;
-        int StormWindowX;
-        int StormWindowY;
-        int StormWindowWidth;
-        int StormWindowHeight;
-
-        char* Language;
-
         unsigned int MaxStormItemHeight;
         unsigned int MaxStormItemWidth;
         int StormItemCount;
-        int ComboStormShape;
-
         int FluffedStormItemCount;
         int RemoveFluff;
 
@@ -232,18 +202,53 @@ extern struct _mGlobal {
         int Direction; // 0 = no, 1 = LTR, 2 = RTL.
         float NewWind;
         float WindMax;
-        float windWhirlValue;
-        double windWhirlTimer;
-        double windWhirlTimerStart;
 
         int windowOffsetY;
         int windowOffsetX;
-
         int MaxDesktopFallenDepth;
         FallenItem* FallenFirst;
 
         double cpufactor;
         float WindowScale;
 
+        int visibleWorkspaceCount;
+        long currentWS;
+        long chosenWorkSpace;
+        long workspaceArray[MAXIMUM_GLOBAL_WORKSPACES];
+
+        Display* display;
+        xdo_t* xdo;
+        char* Language;
+
+        int StormWindowX;
+        int StormWindowY;
+        int StormWindowWidth;
+        int StormWindowHeight;
+
+        int ComboStormShape;
+
+        float windWhirlValue;
+        double windWhirlTimer;
+        double windWhirlTimerStart;
+
+        GtkWidget* gtkStormWindowWidget;
+        bool isStormWindowTransparent;
+
+        bool isCairoAvailable;
+        guint cairoWindowGuid;
+        cairo_t* cairoWindow;
+        cairo_surface_t* cairoSurface;
+
+        // Rootwindow or StormWindow.
+        Bool hasDestopWindow;
+
+        Window Rootwindow;
+        int Xroot;
+        int Yroot;
+        unsigned int Wroot;
+        unsigned int Hroot;
 
 } mGlobal;
+
+
+

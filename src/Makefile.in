@@ -132,9 +132,9 @@ am_plasmastorm_OBJECTS = plasmastorm-Application.$(OBJEXT) \
 	plasmastorm-MainWindow.$(OBJEXT) plasmastorm-pixmaps.$(OBJEXT) \
 	plasmastorm-Prefs.$(OBJEXT) plasmastorm-safeMalloc.$(OBJEXT) \
 	plasmastorm-splineHelper.$(OBJEXT) plasmastorm-Stars.$(OBJEXT) \
-	plasmastorm-Storm.$(OBJEXT) plasmastorm-transwindow.$(OBJEXT) \
+	plasmastorm-Storm.$(OBJEXT) plasmastorm-StormWindow.$(OBJEXT) \
 	plasmastorm-utils.$(OBJEXT) plasmastorm-Wind.$(OBJEXT) \
-	plasmastorm-windows.$(OBJEXT) \
+	plasmastorm-Windows.$(OBJEXT) \
 	plasmastorm-x11WindowHelper.$(OBJEXT) \
 	plasmastorm-xpmHelper.$(OBJEXT)
 nodist_plasmastorm_OBJECTS =
@@ -170,16 +170,16 @@ am__depfiles_remade = ./$(DEPDIR)/libxdo_a-XDOSearch.Po \
 	./$(DEPDIR)/plasmastorm-Prefs.Po \
 	./$(DEPDIR)/plasmastorm-Stars.Po \
 	./$(DEPDIR)/plasmastorm-Storm.Po \
+	./$(DEPDIR)/plasmastorm-StormWindow.Po \
 	./$(DEPDIR)/plasmastorm-Wind.Po \
+	./$(DEPDIR)/plasmastorm-Windows.Po \
 	./$(DEPDIR)/plasmastorm-hashTableHelper.Po \
 	./$(DEPDIR)/plasmastorm-loadmeasure.Po \
 	./$(DEPDIR)/plasmastorm-mainstub.Po \
 	./$(DEPDIR)/plasmastorm-pixmaps.Po \
 	./$(DEPDIR)/plasmastorm-safeMalloc.Po \
 	./$(DEPDIR)/plasmastorm-splineHelper.Po \
-	./$(DEPDIR)/plasmastorm-transwindow.Po \
 	./$(DEPDIR)/plasmastorm-utils.Po \
-	./$(DEPDIR)/plasmastorm-windows.Po \
 	./$(DEPDIR)/plasmastorm-x11WindowHelper.Po \
 	./$(DEPDIR)/plasmastorm-xpmHelper.Po
 am__mv = mv -f
@@ -703,12 +703,12 @@ plasmastorm_SOURCES = \
 		splineHelper.h splineHelper.c \
 		Stars.h Stars.c \
 		Storm.h Storm.c \
-		transwindow.h transwindow.c \
+		StormWindow.h StormWindow.c \
 		ui.glade \
 		utils.h utils.c \
 		versionHelper.h \
 		Wind.c Wind.h \
-		windows.h windows.c \
+		Windows.h Windows.c \
 		x11WindowHelper.h x11WindowHelper.c \
 		xpmHelper.h xpmHelper.c
 
@@ -835,16 +835,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Prefs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Stars.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Storm.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-StormWindow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Wind.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Windows.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-hashTableHelper.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-loadmeasure.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-mainstub.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-pixmaps.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-safeMalloc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-splineHelper.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-transwindow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-utils.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-windows.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-x11WindowHelper.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-xpmHelper.Po@am__quote@ # am--include-marker
 
@@ -1064,19 +1064,19 @@ plasmastorm-Storm.obj: Storm.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-Storm.obj `if test -f 'Storm.c'; then $(CYGPATH_W) 'Storm.c'; else $(CYGPATH_W) '$(srcdir)/Storm.c'; fi`
 
-plasmastorm-transwindow.o: transwindow.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-transwindow.o -MD -MP -MF $(DEPDIR)/plasmastorm-transwindow.Tpo -c -o plasmastorm-transwindow.o `test -f 'transwindow.c' || echo '$(srcdir)/'`transwindow.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-transwindow.Tpo $(DEPDIR)/plasmastorm-transwindow.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='transwindow.c' object='plasmastorm-transwindow.o' libtool=no @AMDEPBACKSLASH@
+plasmastorm-StormWindow.o: StormWindow.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-StormWindow.o -MD -MP -MF $(DEPDIR)/plasmastorm-StormWindow.Tpo -c -o plasmastorm-StormWindow.o `test -f 'StormWindow.c' || echo '$(srcdir)/'`StormWindow.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-StormWindow.Tpo $(DEPDIR)/plasmastorm-StormWindow.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='StormWindow.c' object='plasmastorm-StormWindow.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-transwindow.o `test -f 'transwindow.c' || echo '$(srcdir)/'`transwindow.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-StormWindow.o `test -f 'StormWindow.c' || echo '$(srcdir)/'`StormWindow.c
 
-plasmastorm-transwindow.obj: transwindow.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-transwindow.obj -MD -MP -MF $(DEPDIR)/plasmastorm-transwindow.Tpo -c -o plasmastorm-transwindow.obj `if test -f 'transwindow.c'; then $(CYGPATH_W) 'transwindow.c'; else $(CYGPATH_W) '$(srcdir)/transwindow.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-transwindow.Tpo $(DEPDIR)/plasmastorm-transwindow.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='transwindow.c' object='plasmastorm-transwindow.obj' libtool=no @AMDEPBACKSLASH@
+plasmastorm-StormWindow.obj: StormWindow.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-StormWindow.obj -MD -MP -MF $(DEPDIR)/plasmastorm-StormWindow.Tpo -c -o plasmastorm-StormWindow.obj `if test -f 'StormWindow.c'; then $(CYGPATH_W) 'StormWindow.c'; else $(CYGPATH_W) '$(srcdir)/StormWindow.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-StormWindow.Tpo $(DEPDIR)/plasmastorm-StormWindow.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='StormWindow.c' object='plasmastorm-StormWindow.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-transwindow.obj `if test -f 'transwindow.c'; then $(CYGPATH_W) 'transwindow.c'; else $(CYGPATH_W) '$(srcdir)/transwindow.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-StormWindow.obj `if test -f 'StormWindow.c'; then $(CYGPATH_W) 'StormWindow.c'; else $(CYGPATH_W) '$(srcdir)/StormWindow.c'; fi`
 
 plasmastorm-utils.o: utils.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-utils.o -MD -MP -MF $(DEPDIR)/plasmastorm-utils.Tpo -c -o plasmastorm-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
@@ -1106,19 +1106,19 @@ plasmastorm-Wind.obj: Wind.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-Wind.obj `if test -f 'Wind.c'; then $(CYGPATH_W) 'Wind.c'; else $(CYGPATH_W) '$(srcdir)/Wind.c'; fi`
 
-plasmastorm-windows.o: windows.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-windows.o -MD -MP -MF $(DEPDIR)/plasmastorm-windows.Tpo -c -o plasmastorm-windows.o `test -f 'windows.c' || echo '$(srcdir)/'`windows.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-windows.Tpo $(DEPDIR)/plasmastorm-windows.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='windows.c' object='plasmastorm-windows.o' libtool=no @AMDEPBACKSLASH@
+plasmastorm-Windows.o: Windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-Windows.o -MD -MP -MF $(DEPDIR)/plasmastorm-Windows.Tpo -c -o plasmastorm-Windows.o `test -f 'Windows.c' || echo '$(srcdir)/'`Windows.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-Windows.Tpo $(DEPDIR)/plasmastorm-Windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Windows.c' object='plasmastorm-Windows.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-windows.o `test -f 'windows.c' || echo '$(srcdir)/'`windows.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-Windows.o `test -f 'Windows.c' || echo '$(srcdir)/'`Windows.c
 
-plasmastorm-windows.obj: windows.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-windows.obj -MD -MP -MF $(DEPDIR)/plasmastorm-windows.Tpo -c -o plasmastorm-windows.obj `if test -f 'windows.c'; then $(CYGPATH_W) 'windows.c'; else $(CYGPATH_W) '$(srcdir)/windows.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-windows.Tpo $(DEPDIR)/plasmastorm-windows.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='windows.c' object='plasmastorm-windows.obj' libtool=no @AMDEPBACKSLASH@
+plasmastorm-Windows.obj: Windows.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-Windows.obj -MD -MP -MF $(DEPDIR)/plasmastorm-Windows.Tpo -c -o plasmastorm-Windows.obj `if test -f 'Windows.c'; then $(CYGPATH_W) 'Windows.c'; else $(CYGPATH_W) '$(srcdir)/Windows.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-Windows.Tpo $(DEPDIR)/plasmastorm-Windows.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='Windows.c' object='plasmastorm-Windows.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-windows.obj `if test -f 'windows.c'; then $(CYGPATH_W) 'windows.c'; else $(CYGPATH_W) '$(srcdir)/windows.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o plasmastorm-Windows.obj `if test -f 'Windows.c'; then $(CYGPATH_W) 'Windows.c'; else $(CYGPATH_W) '$(srcdir)/Windows.c'; fi`
 
 plasmastorm-x11WindowHelper.o: x11WindowHelper.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT plasmastorm-x11WindowHelper.o -MD -MP -MF $(DEPDIR)/plasmastorm-x11WindowHelper.Tpo -c -o plasmastorm-x11WindowHelper.o `test -f 'x11WindowHelper.c' || echo '$(srcdir)/'`x11WindowHelper.c
@@ -1649,16 +1649,16 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/plasmastorm-Prefs.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Stars.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Storm.Po
+	-rm -f ./$(DEPDIR)/plasmastorm-StormWindow.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Wind.Po
+	-rm -f ./$(DEPDIR)/plasmastorm-Windows.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-hashTableHelper.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-loadmeasure.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-mainstub.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-pixmaps.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-safeMalloc.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-splineHelper.Po
-	-rm -f ./$(DEPDIR)/plasmastorm-transwindow.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-utils.Po
-	-rm -f ./$(DEPDIR)/plasmastorm-windows.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-x11WindowHelper.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-xpmHelper.Po
 	-rm -f Makefile
@@ -1718,16 +1718,16 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/plasmastorm-Prefs.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Stars.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Storm.Po
+	-rm -f ./$(DEPDIR)/plasmastorm-StormWindow.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Wind.Po
+	-rm -f ./$(DEPDIR)/plasmastorm-Windows.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-hashTableHelper.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-loadmeasure.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-mainstub.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-pixmaps.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-safeMalloc.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-splineHelper.Po
-	-rm -f ./$(DEPDIR)/plasmastorm-transwindow.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-utils.Po
-	-rm -f ./$(DEPDIR)/plasmastorm-windows.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-x11WindowHelper.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-xpmHelper.Po
 	-rm -f Makefile

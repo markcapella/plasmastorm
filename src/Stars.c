@@ -25,34 +25,34 @@
 #include <X11/Intrinsic.h>
 #include <gtk/gtk.h>
 
+#include "ColorCodes.h"
 #include "pixmaps.h"
 #include "Prefs.h"
 #include "safeMalloc.h"
 #include "Stars.h"
 #include "utils.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /** *********************************************************************
  ** Module globals and consts.
  **/
 
-#define STARANIMATIONS 4
-
-static const int STAR_SIZE = 9;
+static const int STAR_SIZE = 10;
 static const float LOCAL_SCALE = 0.8;
+static int mPreviousAppScale = 100;
 
 static int mNumberOfStars;
-
 static StarCoordinate* mStarCoordinates = NULL;
 
+// From GTK pango-color-table.h
+#define STARANIMATIONS 4
+
+static cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
+
 static char* mStarColorArray[STARANIMATIONS] =
-    { (char*) "gold", (char*) "gold1",
-      (char*) "gold4", (char*) "orange"};
+    { "gold", "gold1", "gold4", "orange" };
 
-static cairo_surface_t* starScreenSurfaces[STARANIMATIONS];
-
-static int mPreviousAppScale = 100;
 
 /** *********************************************************************
  ** This method initializes the Stars module.
@@ -60,13 +60,15 @@ static int mPreviousAppScale = 100;
 void initStarsModule() {
     initStarsModuleArrays();
 
-    // Clear and set starScreenSurfaces.
+    // Clear and set mStarSurfaceArray.
     for (int i = 0; i < STARANIMATIONS; i++) {
-        starScreenSurfaces[i] = NULL;
+        mStarSurfaceArray[i] = NULL;
     }
+
     initStarsModuleSurfaces();
 
-    addMethodToMainloop(PRIORITY_DEFAULT, time_ustar, updateStarsFrame);
+    addMethodToMainloop(PRIORITY_DEFAULT,
+        time_ustar, updateStarsFrame);
 }
 
 /** *********************************************************************
@@ -81,7 +83,7 @@ void initStarsModuleArrays() {
     REALLOC_CHECK(mStarCoordinates);
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        StarCoordinate *star = &mStarCoordinates[i];
+        StarCoordinate* star = &mStarCoordinates[i];
         star->x = randint(mGlobal.StormWindowWidth);
         star->y = randint(mGlobal.StormWindowHeight / 4);
         star->color = randint(STARANIMATIONS);
@@ -92,41 +94,50 @@ void initStarsModuleArrays() {
  ** This method inits cairo surfaces.
  **/
 void initStarsModuleSurfaces() {
+    // Clear and set mStarSurfaceArray.
     for (int i = 0; i < STARANIMATIONS; i++) {
-        float size = LOCAL_SCALE * mGlobal.WindowScale *
-            0.01 * Flags.Scale * STAR_SIZE;
+        mStarSurfaceArray[i] = NULL;
+    }
 
-        size *= 0.2 * (1 + 4 * drand48());
-        if (size < 1) {
-            size = 1;
+    const float sizeBase = STAR_SIZE * LOCAL_SCALE *
+        mGlobal.WindowScale * Flags.Scale * 0.01;
+
+    for (int i = 0; i < STARANIMATIONS; i++) {
+        float size = sizeBase * 0.2 * (1 + 4 * drand48());
+        if (size < 3) {
+            size = 3;
         }
 
-        // Release and recreate surfaces.
-        if (starScreenSurfaces[i]) {
-            cairo_surface_destroy(starScreenSurfaces[i]);
+        // Release and recreate star image surface @ index.
+        if (mStarSurfaceArray[i]) {
+            cairo_surface_destroy(mStarSurfaceArray[i]);
         }
-        starScreenSurfaces[i] = cairo_image_surface_create(
+        mStarSurfaceArray[i] = cairo_image_surface_create(
             CAIRO_FORMAT_ARGB32, size, size);
 
-        cairo_t *cr = cairo_create(starScreenSurfaces[i]);
+        // Create region on surface.
+        cairo_t* cr = cairo_create(mStarSurfaceArray[i]);
         cairo_set_line_width(cr, 1.0 * size / STAR_SIZE);
 
+        // Set color, draw star, and done :-)
         GdkRGBA color;
         gdk_rgba_parse(&color, mStarColorArray[i]);
-
-        cairo_set_source_rgba(cr, color.red,
-            color.green, color.blue, color.alpha);
+        cairo_set_source_rgba(cr, color.red, color.green,
+            color.blue, color.alpha);
 
         cairo_move_to(cr, 0, 0);
         cairo_line_to(cr, size, size);
+
         cairo_move_to(cr, 0, size);
         cairo_line_to(cr, size, 0);
+
         cairo_move_to(cr, 0, size / 2);
         cairo_line_to(cr, size, size / 2);
+
         cairo_move_to(cr, size / 2, 0);
         cairo_line_to(cr, size / 2, size);
-        cairo_stroke(cr);
 
+        cairo_stroke(cr);
         cairo_destroy(cr);
     }
 }
@@ -141,7 +152,7 @@ void eraseStarsFrame() {
     }
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        StarCoordinate *star = &mStarCoordinates[i];
+        StarCoordinate* star = &mStarCoordinates[i];
 
         sanelyCheckAndClearDisplayArea(mGlobal.display,
             mGlobal.StormWindow, star->x, star->y,
@@ -186,7 +197,7 @@ void drawStarsFrame(cairo_t *cr) {
 
     for (int i = 0; i < mNumberOfStars; i++) {
         StarCoordinate* star = &mStarCoordinates[i];
-        cairo_set_source_surface(cr, starScreenSurfaces[star->color],
+        cairo_set_source_surface(cr, mStarSurfaceArray[star->color],
             star->x, star->y);
 
         if (isAreaClippedByWindow(star->x, star->y,
@@ -212,7 +223,7 @@ void updateStarsUserSettings() {
         OldFlags.ShowStars = Flags.ShowStars;
         clearStormWindow();
         Flags.mHaveFlagsChanged++;
-        printf("\nplasmastorm: updateStarsUserSettings() User Setting change !!.\n\n");
+        // printf("\nplasmastorm: updateStarsUserSettings() User Setting change !!.\n\n");
     }
     //printf("plasmastorm: updateStarsUserSettings() Starts for ShowStars: %i %i.\n",
     //    Flags.ShowStars, gtk_toggle_button_get_active(

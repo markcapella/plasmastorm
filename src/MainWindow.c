@@ -48,7 +48,7 @@
 #include "Storm.h"
 #include "utils.h"
 #include "versionHelper.h"
-#include "windows.h"
+#include "Windows.h"
 
 
 /***********************************************************
@@ -122,14 +122,14 @@ static struct _button {
 /** *********************************************************************
  ** MainWindow class getter / setters.
  **/
-GtkWidget* getMainWindowOfUI() {
+GtkWidget* getMainWindow() {
     return mMainWindow;
 }
 
 /** *********************************************************************
  ** Main UI Form control.
  **/
-void initializeMainWindow() {
+void createMainWindown() {
     mIsUserThreadRunning = true;
 
     builder = gtk_builder_new_from_string(mStringBuilder, -1);
@@ -247,24 +247,16 @@ void initializeMainWindow() {
     }
 
     gtk_combo_box_set_active(GTK_COMBO_BOX(LangButton), 0);
+
     for (int i = 0; i < nlang; i++) {
         if (!strcmp(lang[i], Flags.Language)) {
             gtk_combo_box_set_active(GTK_COMBO_BOX(LangButton), i);
             break;
         }
     }
+
     g_signal_connect(LangButton, "changed",
         G_CALLBACK(onSelectedLanguageBox), NULL);
-
-    // TODO: ???
-    if (strlen(LANGUAGES) == 0) {
-        gtk_widget_destroy(GTK_WIDGET(LangButton));
-    }
-
-    // Hide us if starting minimized.
-    if (Flags.mHideMenu) {
-        gtk_window_iconify(GTK_WINDOW(mMainWindow));
-    }
 }
 
 /** *********************************************************************
@@ -836,7 +828,7 @@ void init_buttons() {
 /** *********************************************************************
  ** Set the UI Main Window Sticky Flag.
  **/
-void ui_set_sticky(int stickyFlag) {
+void setMainWindowSticky(bool stickyFlag) {
     if (!mIsUserThreadRunning) {
         return;
     }
@@ -914,7 +906,7 @@ void applyCSSToWindow(GtkWidget* widget,
     // For container widgets, apply to every child.
     if (GTK_IS_CONTAINER(widget)) {
         gtk_container_forall(GTK_CONTAINER(widget),
-            (GtkCallback)applyCSSToWindow, cssstyleProvider);
+            (GtkCallback) applyCSSToWindow, cssstyleProvider);
     }
 }
 

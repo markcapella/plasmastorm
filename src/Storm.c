@@ -40,7 +40,7 @@
 #include "Storm.h"
 #include "utils.h"
 #include "Wind.h"
-#include "windows.h"
+#include "Windows.h"
 #include "xpmHelper.h"
 
 
@@ -630,7 +630,7 @@ int updateStormItem(StormItem* stormItem) {
         }
         unlockFallenSemaphore();
 
-        stormItem->isVisible = isStormItemBehindWindow(stormItem,
+        stormItem->isVisible = isStormItemVisible(stormItem,
             lrintf(NewX), lrintf(NewY));
     }
 
@@ -923,10 +923,10 @@ bool isStormItemFallen(StormItem* stormItem,
 /** *********************************************************************
  ** This method checks if stormItem is behind a window.
  **/
-bool isStormItemBehindWindow(StormItem* stormItem,
+bool isStormItemVisible(StormItem* stormItem,
         int xPos, int yPos) {
 
-    return isAreaClippedByWindow(xPos, yPos,
+    return !isAreaClippedByWindow(xPos, yPos,
         mStormItemSurfaceList[stormItem->shapeType].width,
         mStormItemSurfaceList[stormItem->shapeType].height);
 }

@@ -39,9 +39,9 @@
 #include "Prefs.h"
 #include "mygettext.h"
 #include "safeMalloc.h"
-#include "transwindow.h"
+#include "StormWindow.h"
 #include "utils.h"
-#include "windows.h"
+#include "Windows.h"
 #include "x11WindowHelper.h"
 #include "xdo.h"
 

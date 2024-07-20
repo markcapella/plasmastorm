@@ -47,7 +47,7 @@
 #include "splineHelper.h"
 #include "utils.h"
 #include "Wind.h"
-#include "windows.h"
+#include "Windows.h"
 
 /** *********************************************************************
  ** Module globals and consts.

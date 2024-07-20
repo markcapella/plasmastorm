@@ -43,7 +43,7 @@
 #include "ColorCodes.h"
 #include "rootWindowHelper.h"
 #include "safeMalloc.h"
-#include "windows.h"
+#include "Windows.h"
 #include "x11WindowHelper.h"
 
 /***********************************************************

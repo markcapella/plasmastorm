@@ -26,9 +26,9 @@
 #define GTK_MICRO 0
 
 
-extern GtkWidget* getMainWindowOfUI();
+extern GtkWidget* getMainWindow();
 
-extern void initializeMainWindow();
+extern void createMainWindown();
 void init_pixmaps();
 
 extern int isGtkVersionValid();
@@ -48,9 +48,9 @@ void init_buttons();
 extern void set_buttons();
 void connectAllButtonSignals();
 
-extern void ui_set_sticky(int x);
-extern void ui_gray_ww(const int m);
-extern void ui_gray_below(const int m);
+void setMainWindowSticky(bool);
+void ui_gray_ww(const int m);
+void ui_gray_below(const int m);
 
 void onSelectedStormShapeBox(GtkComboBoxText*,
     gpointer data);

@@ -38,7 +38,7 @@
 #include "safeMalloc.h"
 #include "utils.h"
 #include "versionHelper.h"
-#include "windows.h"
+#include "Windows.h"
 #include "xdo.h"
 
 #define BACKTRACE_BUFFER_SIZE 100

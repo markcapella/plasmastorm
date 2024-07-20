@@ -59,17 +59,15 @@
 #include "MainWindow.h"
 #include "mygettext.h"
 #include "Prefs.h"
-#include "rootWindowHelper.h"
 #include "safeMalloc.h"
 #include "Stars.h"
 #include "Storm.h"
-#include "transwindow.h"
+#include "StormWindow.h"
 #include "utils.h"
 #include "versionHelper.h"
 #include "Wind.h"
-#include "windows.h"
+#include "Windows.h"
 #include "x11WindowHelper.h"
-#include "xdo.h"
 
 
 /** *********************************************************************
@@ -79,21 +77,10 @@
 // mGlobal object base.
 struct _mGlobal mGlobal;
 
-static char* mStormWindowDebugTitle = NULL;
-
-static GtkWidget* mStormWindowWidget = NULL;
 static guint mTransparentWindowGUID = 0;
-static int mIsSticky = 0;
-
-static bool mX11CairoEnabled;
-static guint mCairoWindowGUID = 0;
-cairo_t* mCairoWindow = NULL;
-cairo_surface_t* mCairoSurface = NULL;
-
-static int wantx = 0;
-static int wanty = 0;
 
 Bool mMainWindowNeedsReconfiguration = true;
+
 static int mPrevStormWindowWidth = 0;
 static int mPrevStormWindowHeight = 0;
 
@@ -216,6 +203,9 @@ int startApplication(int argc, char *argv[]) {
 
     createStormWindow();
 
+    mPrevStormWindowWidth = mGlobal.StormWindowWidth;
+    mPrevStormWindowHeight = mGlobal.StormWindowHeight;
+
     // Init all Global Flags.
     OldFlags.shutdownRequested = Flags.shutdownRequested;
     OldFlags.mHaveFlagsChanged = Flags.mHaveFlagsChanged;
@@ -267,9 +257,22 @@ int startApplication(int argc, char *argv[]) {
 
     clearStormWindow();
 
-    initializeMainWindow();
+    createMainWindown();
 
-    ui_set_sticky(Flags.AllWorkspaces);
+    // Set both windows under one dock icon.
+    //gtk_widget_hide(mGlobal.gtkStormWindowWidget);
+    //gtk_widget_hide(getMainWindow());
+    //gtk_widget_set_parent(getMainWindow(),
+    //    mGlobal.gtkStormWindowWidget);
+    //gtk_widget_show(mGlobal.gtkStormWindowWidget);
+    //gtk_widget_show(getMainWindow());
+
+    // Hide us if starting minimized.
+    if (Flags.mHideMenu) {
+        gtk_window_iconify(GTK_WINDOW(getMainWindow()));
+    }
+
+    setMainWindowSticky(Flags.AllWorkspaces);
 
     Flags.shutdownRequested = false;
     updateWindowsList();
@@ -298,7 +301,7 @@ int startApplication(int argc, char *argv[]) {
 
     // Set mGlobal.chosenWorkSpace.
     HandleCpuFactor();
-    DoAllWorkspaces();
+    respondToWorkspaceSettingsChange();
 
     // Log Storming window status.
     printf("%splasmastorm: It\'s Storming in:%s\n",
@@ -317,12 +320,7 @@ int startApplication(int argc, char *argv[]) {
 
     // Display termination messages to MessageBox or STDOUT.
      printf("%s\nThanks for using plasmastorm, you rock !%s\n",
-         COLOR_BLUE, COLOR_NORMAL);
-
-    // Bring it all back down !
-    if (mStormWindowDebugTitle) {
-        free(mStormWindowDebugTitle);
-    }
+         COLOR_GREEN, COLOR_NORMAL);
 
     // Terminate Storming.
     XClearWindow(mGlobal.display, mGlobal.StormWindow);
@@ -351,142 +349,23 @@ void setAppAboveOrBelowAllWindows() {
 }
 
 /** *********************************************************************
- ** This method ...
+ ** This method gets the desktop session type from env vars.
  **/
-void createStormWindow() {
-    mGlobal.Rootwindow =
-        DefaultRootWindow(mGlobal.display);
-
-    mGlobal.isStormWindowTransparent = false;
-    mX11CairoEnabled = false;
-
-    mGlobal.hasDestopWindow = true;
-
-    // Try to create a transparent clickthrough window.
-    GtkWidget* stormWindowWidget =
-        gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
-    gtk_widget_set_can_focus(stormWindowWidget, TRUE);
-    gtk_window_set_decorated(GTK_WINDOW(stormWindowWidget), FALSE);
-    gtk_window_set_type_hint(GTK_WINDOW(stormWindowWidget),
-        GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-
-    // Create transparent StormWindow widget.
-    Window stormX11Window;
-    GdkWindow* stormGdkWindow;
-
-    if (createTransparentWindow(mGlobal.display, stormWindowWidget,
-        Flags.AllWorkspaces, true, false,
-        &stormGdkWindow, &stormX11Window, &wantx, &wanty)) {
-
-        mGlobal.isStormWindowTransparent = true;
-        mStormWindowWidget = stormWindowWidget;
-        mGlobal.StormWindow = stormX11Window;
-
-        gtk_window_set_icon_from_file(GTK_WINDOW(mStormWindowWidget),
-            "/usr/share/icons/hicolor/48x48/apps/"
-            "plasmastormicon.png", NULL);
-
-        GtkWidget* drawing_area = gtk_drawing_area_new();
-        gtk_container_add(GTK_CONTAINER(mStormWindowWidget),
-            drawing_area);
-
-        g_signal_connect(mStormWindowWidget, "draw", G_CALLBACK(
-            handleTransparentWindowDrawEvents), NULL);
-
-        printf("%sTransparent StormWindow created.%s\n\n",
-            COLOR_NORMAL, COLOR_NORMAL);
-
-    } else {
-        mX11CairoEnabled = true;
-
-        // Find global StormWindow based on desktop.
-        setmGlobalDesktopSession();
-
-        Window desktopAsStormWindow = None;
-        if (strncmp(mGlobal.DesktopSession, "LXDE", 4) == 0) {
-            desktopAsStormWindow = largest_window_with_name(
-                mGlobal.xdo, "^pcmanfm$");
-        }
-        if (!desktopAsStormWindow) {
-            desktopAsStormWindow = largest_window_with_name(
-            mGlobal.xdo, "^Desktop$");
-        }
-        if (!desktopAsStormWindow) {
-            desktopAsStormWindow = mGlobal.Rootwindow;
-        }
-        mGlobal.StormWindow = desktopAsStormWindow;
-
-        printf("\n%splasmastorm:application: createStormWindow() "
-            "Transparent click-thru StormWindow not available.%s\n\n",
-            COLOR_YELLOW, COLOR_NORMAL);
-    }
-
-    // Start initial window screen position.
-    if (mX11CairoEnabled) {
-        handleX11CairoDisplay();
-        mCairoWindowGUID = addMethodWithArgToMainloop(PRIORITY_HIGH,
-            DO_CAIRO_DRAW_EVENT_TIME, drawCairoWindow, mCairoWindow);
-        mGlobal.windowOffsetX = 0;
-        mGlobal.windowOffsetY = 0;
-    } else {
-        mGlobal.windowOffsetX = wantx;
-        mGlobal.windowOffsetY = wanty;
-    }
-
-    // Save StormWindow debug title.
-    mStormWindowDebugTitle = strdup("no name");
-    XTextProperty titleBarName;
-
-    if (XGetWMName(mGlobal.display, mGlobal.StormWindow,
-        &titleBarName)) {
-        mStormWindowDebugTitle = strdup((char*)
-            titleBarName.value);
-    }
-    XFree(titleBarName.value);
-
-    mGlobal.StormWindowX = wantx;
-    mGlobal.StormWindowY = wanty;
-
-    if (!mX11CairoEnabled) {
-        xdo_move_window(mGlobal.xdo, mGlobal.StormWindow,
-            mGlobal.StormWindowX, mGlobal.StormWindowY);
-    }
-    xdo_wait_for_window_map_state(mGlobal.xdo,
-        mGlobal.StormWindow, IsViewable);
-
-    initDisplayDimensions();
-    mPrevStormWindowWidth = mGlobal.StormWindowWidth;
-    mPrevStormWindowHeight = mGlobal.StormWindowHeight;
-
-    SetWindowScale();
-    fflush(stdout);
-}
-
-/** *********************************************************************
- ** 
- **/
-void setmGlobalDesktopSession() {
-    // Early out if already set.
-    if (mGlobal.DesktopSession != NULL) {
-        return;
-    }
-
-    const char *DESKTOPS[] = {"DESKTOP_SESSION",
-        "XDG_SESSION_DESKTOP", "XDG_CURRENT_DESKTOP",
-        "GDMSESSION", NULL};
+void setDesktopSession() {
+    const char* DESKTOPS[] = {
+        "DESKTOP_SESSION", "XDG_SESSION_DESKTOP",
+        "XDG_CURRENT_DESKTOP", "GDMSESSION", NULL};
 
     for (int i = 0; DESKTOPS[i]; i++) {
-        char* desktopsession = NULL;
-        desktopsession = getenv(DESKTOPS[i]);
+        const char* desktopsession = getenv(DESKTOPS[i]);
         if (desktopsession) {
             mGlobal.DesktopSession = strdup(desktopsession);
             return;
         }
     }
 
-    mGlobal.DesktopSession =
-        (char *) "unknown_desktop_session";
+    mGlobal.DesktopSession = (char*)
+        "unknown_desktop_session";
 }
 
 /** *********************************************************************
@@ -499,50 +378,21 @@ void handleX11CairoDisplay() {
 
     printf("handleX11CairoDisplay() Double buffers unavailable "
         "or unrequested.\n");
+
     Visual* visual = DefaultVisual(mGlobal.display,
         DefaultScreen(mGlobal.display));
-    mCairoSurface = cairo_xlib_surface_create(mGlobal.display,
+    mGlobal.cairoSurface = cairo_xlib_surface_create(mGlobal.display,
         mGlobal.StormWindow, visual, width, height);
 
     // Destroy & create new Cairo Window.
-    if (mCairoWindow) {
-        cairo_destroy(mCairoWindow);
+    if (mGlobal.cairoWindow) {
+        cairo_destroy(mGlobal.cairoWindow);
     }
-    mCairoWindow = cairo_create(mCairoSurface);
-    cairo_xlib_surface_set_size(mCairoSurface, width, height);
+    mGlobal.cairoWindow = cairo_create(mGlobal.cairoSurface);
+    cairo_xlib_surface_set_size(mGlobal.cairoSurface, width, height);
 
     mGlobal.StormWindowWidth = width;
     mGlobal.StormWindowHeight = height;
-}
-
-/** *********************************************************************
- ** Set the Transparent Window Sticky Flag.
- **/
-void setTransparentWindowStickyState(int isSticky) {
-    if (!mGlobal.isStormWindowTransparent) {
-        return;
-    }
-
-    mIsSticky = isSticky;
-    if (mIsSticky) {
-        gtk_window_stick(GTK_WINDOW(mStormWindowWidget));
-    } else {
-        gtk_window_unstick(GTK_WINDOW(mStormWindowWidget));
-    }
-}
-
-/** *********************************************************************
- ** TODO:
- **/
-void DoAllWorkspaces() {
-    if (Flags.AllWorkspaces) {
-        setTransparentWindowStickyState(1);
-    } else {
-        setTransparentWindowStickyState(0);
-        mGlobal.chosenWorkSpace = mGlobal.workspaceArray[0];
-    }
-
-    ui_set_sticky(Flags.AllWorkspaces);
 }
 
 /** *********************************************************************
@@ -603,7 +453,7 @@ void respondToAdvancedSettingsChanges() {
             OldFlags.AllWorkspaces) {
         OldFlags.AllWorkspaces =
             Flags.AllWorkspaces;
-        DoAllWorkspaces();
+        respondToWorkspaceSettingsChange();
         Flags.mHaveFlagsChanged++;
     }
 
@@ -615,6 +465,24 @@ void respondToAdvancedSettingsChanges() {
         set_buttons();
         Flags.mHaveFlagsChanged = 0;
     }
+}
+
+/** *********************************************************************
+ ** 
+ **/
+void respondToWorkspaceSettingsChange() {
+    if (Flags.AllWorkspaces) {
+        if (mGlobal.isStormWindowTransparent) {
+            setStormWindowSticky(true);
+        }
+    } else {
+        if (mGlobal.isStormWindowTransparent) {
+            setStormWindowSticky(false);
+        }
+        mGlobal.chosenWorkSpace = mGlobal.workspaceArray[0];
+    }
+
+    setMainWindowSticky(Flags.AllWorkspaces);
 }
 
 /** *********************************************************************
@@ -804,17 +672,6 @@ int handleX11ErrorEvent(Display* dpy, XErrorEvent* event) {
 }
 
 /** *********************************************************************
- ** This method id the draw callback.
- **/
-gboolean handleTransparentWindowDrawEvents(
-    __attribute__((unused)) GtkWidget *widget, cairo_t *cr,
-    __attribute__((unused)) gpointer user_data) {
-
-    drawCairoWindowInternal(cr);
-    return FALSE;
-}
-
-/** *********************************************************************
  ** This method ...
  **/
 int drawCairoWindow(void *cr) {
@@ -851,7 +708,7 @@ void drawCairoWindowInternal(cairo_t *cr) {
 
     int tx = 0;
     int ty = 0;
-    if (mX11CairoEnabled) {
+    if (mGlobal.isCairoAvailable) {
         tx = mGlobal.StormWindowX;
         ty = mGlobal.StormWindowY;
     }
@@ -866,22 +723,6 @@ void drawCairoWindowInternal(cairo_t *cr) {
 
     cairo_restore(cr);
     XFlush(mGlobal.display);
-}
-
-/** *********************************************************************
- ** This method ...
- **/
-void SetWindowScale() {
-    // assuming a standard screen of 1024x576, we suggest to use the scalefactor
-    // WindowScale
-    float x = mGlobal.StormWindowWidth / 1000.0;
-    float y = mGlobal.StormWindowHeight / 576.0;
-
-    if (x < y) {
-        mGlobal.WindowScale = x;
-    } else {
-        mGlobal.WindowScale = y;
-    }
 }
 
 /** *********************************************************************
@@ -907,7 +748,7 @@ int handleDisplayReconfigurationChange() {
         RestartDisplay();
         mPrevStormWindowWidth = mGlobal.StormWindowWidth;
         mPrevStormWindowHeight = mGlobal.StormWindowHeight;
-        SetWindowScale();
+        setStormWindowScale();
     }
 
     fflush(stdout);
@@ -956,18 +797,18 @@ void addWindowDrawMethodToMainloop() {
 
         mTransparentWindowGUID = addMethodWithArgToMainloop(
             PRIORITY_HIGH, DO_CAIRO_DRAW_EVENT_TIME,
-            drawTransparentWindow, mStormWindowWidget);
+            drawTransparentWindow, mGlobal.gtkStormWindowWidget);
         return;
     }
 
     // If storm window not transparent.
-    if (mCairoWindowGUID) {
-        g_source_remove(mCairoWindowGUID);
+    if (mGlobal.cairoWindowGuid) {
+        g_source_remove(mGlobal.cairoWindowGuid);
     }
 
-    mCairoWindowGUID = addMethodWithArgToMainloop(
+    mGlobal.cairoWindowGuid = addMethodWithArgToMainloop(
         PRIORITY_HIGH, DO_CAIRO_DRAW_EVENT_TIME,
-        drawCairoWindow, mCairoWindow);
+        drawCairoWindow, mGlobal.cairoWindow);
 }
 
 /** *********************************************************************
