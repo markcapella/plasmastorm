@@ -271,23 +271,15 @@ int hasAppScaleChangedFrom(int* prevscale) {
 }
 
 /** *********************************************************************
- ** Helper methods ...
+ ** Helper methods to create sorted n random numbers.
+ **
+ ** double *a : The array to be filled.
+ ** int n     :  The number of items in array.
+ ** double d  : minimum distance between items.
+ ** unsigned short* seed: NULL: use drand48()
  **/
-// create sorted n random numbers in interval [0.0, 1.0) such that
-// adjacent numbers differ at least d.
-// If the distance between two numers is initially less than d,
-// a new random number is drawn. this is repeated at most 100 times.
-// On failure, the array is filled with equidistant numbers.
-// parameters:
-// double *a: the array to be filled
-// int n:     number of items in array
-// double d:  minimum difference between items
-// unsigned short *seed: NULL: use drand48()
-//                       pointer to array of 3 unsigned shorts: use erand48()
-//                       see man drand48
-//
-void randomuniqarray(double *a, int n, double d, unsigned short *seed) {
-    const int debug = 0;
+void randomuniqarray(double *a, int n, double d,
+    unsigned short *seed) {
 
     if (seed) {
         for (int i = 0; i < n; i++) {
@@ -308,9 +300,6 @@ void randomuniqarray(double *a, int n, double d, unsigned short *seed) {
         for (int i = 0; i < n - 1; i++) {
             // draw a new random number for a[i]
             if (fabs(a[i + 1] - a[i]) < d) {
-                if (debug) {
-                    printf("changed %d %f %f\n", i, a[i + 1], a[i]);
-                }
                 changed = 1;
                 if (seed) {
                     a[i] = erand48(seed);
@@ -339,20 +328,19 @@ void randomuniqarray(double *a, int n, double d, unsigned short *seed) {
 }
 
 /** *********************************************************************
- ** Helper methods ...
+ ** Helper method inspired by Mr. Gauss, and adapted for app
  **/
-// inspired by Mr. Gauss, and adapted for app
 float gaussf(float x, float mu, float sigma) {
+
     float y = (x - mu) / sigma;
     float y2 = y * y;
     return expf(-y2);
 }
 
 /** *********************************************************************
- ** Helper methods ...
+ ** Helper method guess language. Return string like "en",
+ ** "nl" or NULL if no language can be found.
  **/
-// guess language. return string like "en", "nl" or NULL if no language can
-// be found
 char* getLanguageFromEnvStrings() {
     const char *candidateStrings[] = {"LANGUAGE", "LANG", "LC_ALL",
         "LC_MESSAGES", "LC_NAME", "LC_TIME", NULL};

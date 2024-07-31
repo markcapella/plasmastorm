@@ -27,17 +27,15 @@
 
 #include "plasmastorm.h"
 
-extern void addWindowsModuleToMainloop(void);
 
-extern int WorkspaceActive(void);
+void addWindowsModuleToMainloop(void);
 
-extern void initDisplayDimensions();
-extern void updateDisplayDimensions(void);
+int WorkspaceActive(void);
 
-extern void SetBackground(void);
+void initDisplayDimensions();
+void updateDisplayDimensions(void);
 
-extern bool isAreaClippedByWindow(int, int,
-    unsigned, unsigned);
+void SetBackground(void);
 
 void getWinInfoList();
 
@@ -48,7 +46,6 @@ bool is_NET_WM_STATE_Hidden(Window window);
 bool is_WM_STATE_Hidden(Window window);
 
 void uninitQPickerDialog();
-void endApplication(void);
 
 
 /***********************************************************

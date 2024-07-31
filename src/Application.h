@@ -76,7 +76,7 @@ void respondToAdvancedSettingsChanges();
 void HandleCpuFactor();
 
 void respondToWorkspaceSettingsChange();
-void setDesktopSession();
+char* getDesktopSession();
 
 int handleDisplayReconfigurationChange();
 

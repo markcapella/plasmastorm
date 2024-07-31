@@ -109,16 +109,23 @@ int startApplication(int argc, char *argv[]) {
 
     if (!isGtkVersionValid()) {
         printf("%splasmastorm: needs gtk version >= %s, "
-            "found version %s.%s\n\n", COLOR_RED,
+            "found version %s.%s\n", COLOR_RED,
             ui_gtk_required(), ui_gtk_version(), COLOR_NORMAL);
         return 0;
     }
 
+    printf("%splasmastorm: Desktop %s detected.%s\n\n",
+        COLOR_BLUE, getDesktopSession() ? getDesktopSession() :
+        "was not", COLOR_NORMAL);
+
+    // Log Wayland info.
     const bool isWaylandPresent = getenv("WAYLAND_DISPLAY") &&
         getenv("WAYLAND_DISPLAY") [0];
-
-    printf("%splasmastorm: Wayland desktop %s detected.%s\n\n",
-        COLOR_BLUE, isWaylandPresent ? "was" : "was not", COLOR_NORMAL);
+    if (isWaylandPresent) {
+        printf("%splasmastorm: Wayland display was "
+            "detected - FATAL.%s\n\n", COLOR_RED, COLOR_NORMAL);
+        exit(1);
+    }
 
     // Before starting GTK, ensure x11 backend is used.
     setenv("GDK_BACKEND", "x11", 1);
@@ -134,7 +141,6 @@ int startApplication(int argc, char *argv[]) {
     // Clear space for app mGlobal struct.
     memset(&mGlobal, 0, sizeof(mGlobal));
 
-    mGlobal.DesktopSession = NULL;
     mGlobal.windowsWereDraggedOrMapped = 0;
     mGlobal.languageChangeRestart = false;
 
@@ -174,7 +180,7 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.xdo = xdo_new_with_opened_display(
         mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
-        printf("plasmastorm needs xdo and it reports "
+        printf("plasmastorm: needs xdo and it reports "
             "no displays - FATAL.\n");
         exit(1);
     }
@@ -259,14 +265,6 @@ int startApplication(int argc, char *argv[]) {
 
     createMainWindown();
 
-    // Set both windows under one dock icon.
-    //gtk_widget_hide(mGlobal.gtkStormWindowWidget);
-    //gtk_widget_hide(getMainWindow());
-    //gtk_widget_set_parent(getMainWindow(),
-    //    mGlobal.gtkStormWindowWidget);
-    //gtk_widget_show(mGlobal.gtkStormWindowWidget);
-    //gtk_widget_show(getMainWindow());
-
     // Hide us if starting minimized.
     if (Flags.mHideMenu) {
         gtk_window_iconify(GTK_WINDOW(getMainWindow()));
@@ -299,17 +297,20 @@ int startApplication(int argc, char *argv[]) {
         DO_UI_SETTINGS_UPDATES_EVENT_TIME,
         doAllUISettingsUpdates);
 
-    // Set mGlobal.chosenWorkSpace.
     HandleCpuFactor();
     respondToWorkspaceSettingsChange();
 
     // Log Storming window status.
     printf("%splasmastorm: It\'s Storming in:%s\n",
         COLOR_CYAN, COLOR_NORMAL);
+
     logWindow(mGlobal.StormWindow);
     fflush(stdout);
 
+    //***************************************************
     // Bring it all up !
+    //***************************************************
+
     printf("\n%splasmastorm: gtk_main() Starts.%s\n",
         COLOR_BLUE, COLOR_NORMAL);
 
@@ -322,7 +323,7 @@ int startApplication(int argc, char *argv[]) {
      printf("%s\nThanks for using plasmastorm, you rock !%s\n",
          COLOR_GREEN, COLOR_NORMAL);
 
-    // Terminate Storming.
+    // More terminates.
     XClearWindow(mGlobal.display, mGlobal.StormWindow);
     XFlush(mGlobal.display);
 
@@ -334,10 +335,8 @@ int startApplication(int argc, char *argv[]) {
         sleep(0);
         setenv("plasmastorm_RESTART", "yes", 1);
         execvp(argv[0], argv);
-        return 0;
     }
 
-    fflush(stdout);
     return 0;
 }
 
@@ -351,21 +350,20 @@ void setAppAboveOrBelowAllWindows() {
 /** *********************************************************************
  ** This method gets the desktop session type from env vars.
  **/
-void setDesktopSession() {
+char* getDesktopSession() {
     const char* DESKTOPS[] = {
         "DESKTOP_SESSION", "XDG_SESSION_DESKTOP",
         "XDG_CURRENT_DESKTOP", "GDMSESSION", NULL};
 
+    char* desktopsession;
     for (int i = 0; DESKTOPS[i]; i++) {
-        const char* desktopsession = getenv(DESKTOPS[i]);
+        desktopsession = getenv(DESKTOPS[i]);
         if (desktopsession) {
-            mGlobal.DesktopSession = strdup(desktopsession);
-            return;
+            break;
         }
     }
 
-    mGlobal.DesktopSession = (char*)
-        "unknown_desktop_session";
+    return desktopsession;
 }
 
 /** *********************************************************************

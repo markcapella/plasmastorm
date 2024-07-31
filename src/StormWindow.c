@@ -68,8 +68,8 @@ void createStormWindow() {
     GdkWindow* stormGdkWindow;
 
     if (createTransparentWindow(mGlobal.display, stormWindowWidget,
-        Flags.AllWorkspaces, true, &stormGdkWindow, &stormX11Window,
-        &wantx, &wanty)) {
+        Flags.AllWorkspaces, true, &stormGdkWindow,
+        &stormX11Window, &wantx, &wanty)) {
 
         mGlobal.gtkStormWindowWidget = stormWindowWidget;
         mGlobal.isStormWindowTransparent = true;
@@ -83,8 +83,8 @@ void createStormWindow() {
         gtk_container_add(GTK_CONTAINER(mGlobal.gtkStormWindowWidget),
             drawing_area);
 
-        g_signal_connect(mGlobal.gtkStormWindowWidget, "draw", G_CALLBACK(
-            handleTransparentWindowDrawEvents), NULL);
+        g_signal_connect(mGlobal.gtkStormWindowWidget, "draw",
+            G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
 
         printf("%sTransparent StormWindow created.%s\n\n",
             COLOR_NORMAL, COLOR_NORMAL);
@@ -93,10 +93,8 @@ void createStormWindow() {
         mGlobal.isCairoAvailable = true;
 
         // Find global StormWindow based on desktop.
-        setDesktopSession();
-
         Window desktopAsStormWindow = None;
-        if (strncmp(mGlobal.DesktopSession, "LXDE", 4) == 0) {
+        if (strncmp(getDesktopSession(), "LXDE", 4) == 0) {
             desktopAsStormWindow = largest_window_with_name(
                 mGlobal.xdo, "^pcmanfm$");
         }
@@ -173,7 +171,6 @@ bool createTransparentWindow(Display* display,
     gtk_window_set_decorated(GTK_WINDOW(inputStormWindow), FALSE);
     gtk_window_set_accept_focus(GTK_WINDOW(inputStormWindow), FALSE);
 
-    // 'below' and 'sticky' are taken care of in gtk_main loop.
     g_signal_connect(inputStormWindow, "draw",
         G_CALLBACK(setStormWindowAttributes), NULL);
 
@@ -219,14 +216,7 @@ bool createTransparentWindow(Display* display,
 
     gtk_widget_show_all(inputStormWindow);
 
-    // Set as dock.
-    //GdkWindow* dockWindow = gtk_widget_get_window(
-    //    GTK_WIDGET(inputStormWindow));
-    //gdk_window_set_type_hint(dockWindow,
-    //    GDK_WINDOW_TYPE_HINT_DOCK);
-    //gdk_window_show(dockWindow);
-
-    // Populate method result fields.
+    // Set return values.
     if (outputStormWindow) {
         *outputStormWindow = gtk_widget_get_window(
             GTK_WIDGET(inputStormWindow));

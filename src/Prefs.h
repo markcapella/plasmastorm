@@ -25,7 +25,7 @@
 #include "safeMalloc.h"
 
 
-typedef struct _flags {
+typedef struct {
 
     char* Language;
     int mHideMenu;

@@ -418,8 +418,7 @@ int xdo_get_active_keys_to_keycode_list(
  *
  * State possibilities:
  *   IsUnmapped - window is not displayed.
- *   IsViewable - window is mapped and shown (though may be clipped by windows
- *     on top of it)
+ *   IsViewable - window is mapped and shown.
  *   IsUnviewable - window is mapped but a parent window is unmapped.
  *
  * @param wid the window you want to wait for.

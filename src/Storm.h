@@ -54,8 +54,6 @@ extern GdkRGBA getNextStormShapeColorAsRGB();
 
 bool isStormItemFallen(StormItem*,
     int xPosition, int yPosition);
-bool isStormItemVisible(StormItem*,
-    int xPosition, int yPosition);
 
 void pushStormItemIntoItemset(StormItem*);
 extern int drawAllStormItemsInItemset(cairo_t*);

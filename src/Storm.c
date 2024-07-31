@@ -629,9 +629,6 @@ int updateStormItem(StormItem* stormItem) {
             return false;
         }
         unlockFallenSemaphore();
-
-        stormItem->isVisible = isStormItemVisible(stormItem,
-            lrintf(NewX), lrintf(NewY));
     }
 
     stormItem->xRealPosition = NewX;
@@ -921,17 +918,6 @@ bool isStormItemFallen(StormItem* stormItem,
 }
 
 /** *********************************************************************
- ** This method checks if stormItem is behind a window.
- **/
-bool isStormItemVisible(StormItem* stormItem,
-        int xPos, int yPos) {
-
-    return !isAreaClippedByWindow(xPos, yPos,
-        mStormItemSurfaceList[stormItem->shapeType].width,
-        mStormItemSurfaceList[stormItem->shapeType].height);
-}
-
-/** *********************************************************************
  ** Itemset hashtable helper - Push a new item into the list.
  **/
 void pushStormItemIntoItemset(StormItem* stormItem) {
@@ -939,7 +925,6 @@ void pushStormItemIntoItemset(StormItem* stormItem) {
 
     stormItem->cyclic = 1;
     stormItem->isFrozen = false;
-    stormItem->isVisible = true;
 
     stormItem->fluff = 0;
     stormItem->flufftimer = 0;

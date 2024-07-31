@@ -39,9 +39,6 @@
  **/
 
 static const int STAR_SIZE = 10;
-static const float LOCAL_SCALE = 0.8;
-static int mPreviousAppScale = 100;
-
 static int mNumberOfStars;
 static StarCoordinate* mStarCoordinates = NULL;
 
@@ -53,6 +50,8 @@ static cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
 static char* mStarColorArray[STARANIMATIONS] =
     { "gold", "gold1", "gold4", "orange" };
 
+static const float LOCAL_SCALE = 0.8;
+static int mPreviousAppScale = 100;
 
 /** *********************************************************************
  ** This method initializes the Stars module.
@@ -84,6 +83,7 @@ void initStarsModuleArrays() {
 
     for (int i = 0; i < mNumberOfStars; i++) {
         StarCoordinate* star = &mStarCoordinates[i];
+
         star->x = randint(mGlobal.StormWindowWidth);
         star->y = randint(mGlobal.StormWindowHeight / 4);
         star->color = randint(STARANIMATIONS);
@@ -152,7 +152,7 @@ void eraseStarsFrame() {
     }
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        StarCoordinate* star = &mStarCoordinates[i];
+        const StarCoordinate* star = &mStarCoordinates[i];
 
         sanelyCheckAndClearDisplayArea(mGlobal.display,
             mGlobal.StormWindow, star->x, star->y,
@@ -196,15 +196,12 @@ void drawStarsFrame(cairo_t *cr) {
     cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 
     for (int i = 0; i < mNumberOfStars; i++) {
-        StarCoordinate* star = &mStarCoordinates[i];
+        const StarCoordinate* star = &mStarCoordinates[i];
+
         cairo_set_source_surface(cr, mStarSurfaceArray[star->color],
             star->x, star->y);
-
-        if (isAreaClippedByWindow(star->x, star->y,
-            STAR_SIZE, STAR_SIZE)) {
-            my_cairo_paint_with_alpha(cr,
-                (0.01 * (100 - Flags.Transparency)));
-        }
+        my_cairo_paint_with_alpha(cr, (0.01 * (100 -
+            Flags.Transparency)));
     }
 
     cairo_restore(cr);
@@ -215,21 +212,12 @@ void drawStarsFrame(cairo_t *cr) {
  ** refreshed user settings.
  **/
 void updateStarsUserSettings() {
-    //UIDO(Stars, 
-    //printf("plasmastorm: updateStarsUserSettings() Starts for ShowStars: %i %i.\n",
-    //    Flags.ShowStars, gtk_toggle_button_get_active(
-    //        GTK_TOGGLE_BUTTON((GtkToggleButton*) Button.ShowStars)));
     if (Flags.ShowStars != OldFlags.ShowStars) {
         OldFlags.ShowStars = Flags.ShowStars;
         clearStormWindow();
         Flags.mHaveFlagsChanged++;
-        // printf("\nplasmastorm: updateStarsUserSettings() User Setting change !!.\n\n");
     }
-    //printf("plasmastorm: updateStarsUserSettings() Starts for ShowStars: %i %i.\n",
-    //    Flags.ShowStars, gtk_toggle_button_get_active(
-    //        GTK_TOGGLE_BUTTON((GtkToggleButton*) Button.ShowStars)));
 
-    //UIDO(NStars, 
     if (Flags.MaxStarCount != OldFlags.MaxStarCount) {
         OldFlags.MaxStarCount = Flags.MaxStarCount;
         initStarsModuleArrays();

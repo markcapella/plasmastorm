@@ -1,4 +1,3 @@
-// https://i.sstatic.net/9UVnC.png
 
 #define COLOR_NORMAL "\033[0m"
 

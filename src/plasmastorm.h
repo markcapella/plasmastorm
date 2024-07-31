@@ -86,7 +86,6 @@ typedef struct _StormItem {
 
         bool cyclic;
         bool isFrozen;
-        bool isVisible;
 
         bool fluff;
         float flufftimer;

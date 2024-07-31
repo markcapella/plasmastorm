@@ -706,53 +706,6 @@ WinInfo* findWinInfoByWindowId(Window window) {
 }
 
 /** *********************************************************************
- ** This method checks if a Snow or Star item is behind a window.
- **
- ** Note, Overlap check will decide that FULLSCREEN windows such
- **       as the DESKTOP & STORMWINDOW Do not obscure anything.
- **       We Snow and Show Stars on top of these.
- **
- **       App Windows less than fullscreen return correct decision.
- **       We Snow and Show Stars as appropriate.
- **
- **       App Windows switched to "fullscreen" report LESS than
- **       FULLSCREEN size, as they allow for Window decorations.
- **       We do not Snow or Show Stars on top of these.
- */
-bool isAreaClippedByWindow(int xPos, int yPos,
-    unsigned xWidth, unsigned yHeight) {
-
-    WinInfo* winInfo = mWinInfoList;
-
-    for (int i = 0; i < mWinInfoListLength; i++) {
-        if (!winInfo->sticky && (winInfo->ws >= 0 &&
-            winInfo->ws != mGlobal.chosenWorkSpace)) {
-            winInfo++;
-            continue;
-        }
-
-        if (winInfo->dock ||
-            winInfo->hidden) {
-            winInfo++;
-            continue;
-        }
-
-        // Overlap check, with convenient fullscreen edge-case.
-        if (xPos + (signed) xWidth < winInfo->x ||
-            yPos + (signed) yHeight < winInfo->y ||
-            xPos > winInfo->x + (signed) winInfo->w ||
-            yPos > winInfo->y + (signed) winInfo->h) {
-            winInfo++;
-            continue;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-/** *********************************************************************
  ** This method removes all FallenItem after a window moves out from
  ** under it but we don't know which one it was.
  **/

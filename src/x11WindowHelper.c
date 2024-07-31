@@ -484,7 +484,7 @@ bool isWindow_Sticky(long workSpace, WinInfo* winInfoItem) {
     Atom type;
     int format;
     unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
+    unsigned char* properties = NULL;
 
     XGetWindowProperty(mGlobal.display, winInfoItem->window,
         XInternAtom(mGlobal.display, "_NET_WM_STATE", False),
@@ -493,8 +493,8 @@ bool isWindow_Sticky(long workSpace, WinInfo* winInfoItem) {
 
     if (type == XA_ATOM) {
         for (unsigned long int i = 0; i < nitems; i++) {
-            char *nameString = XGetAtomName(mGlobal.display,
-                ((Atom *) (void *) properties) [i]);
+            char* nameString = XGetAtomName(mGlobal.display,
+                ((Atom*) (void*) properties) [i]);
             if (strcmp(nameString, "_NET_WM_STATE_STICKY") == 0) {
                 result = true;
                 if (nameString) {
@@ -524,7 +524,7 @@ bool isWindow_Dock(WinInfo* winInfoItem) {
     Atom type;
     int format;
     unsigned long nitems, unusedBytes;
-    unsigned char *properties = NULL;
+    unsigned char* properties = NULL;
 
     XGetWindowProperty(mGlobal.display, winInfoItem->window,
         XInternAtom(mGlobal.display, "_NET_WM_WINDOW_TYPE", False),
@@ -533,8 +533,8 @@ bool isWindow_Dock(WinInfo* winInfoItem) {
 
     if (format == 32) {
         for (int i = 0; (unsigned long)i < nitems; i++) {
-            char *nameString = XGetAtomName(mGlobal.display,
-                ((Atom *) (void *) properties) [i]);
+            char* nameString = XGetAtomName(mGlobal.display,
+                ((Atom*) (void*) properties) [i]);
             if (strcmp(nameString, "_NET_WM_WINDOW_TYPE_DOCK") == 0) {
                 result = true;
                 if (nameString) {

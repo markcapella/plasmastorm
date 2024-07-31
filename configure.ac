@@ -22,7 +22,7 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmastorm], [2024.07.19-1], [markcapella@twcny.rr.com])
+AC_INIT([plasmastorm], [2024.07.31], [markcapella@twcny.rr.com])
 AC_CONFIG_SRCDIR([src/plasmastorm.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
