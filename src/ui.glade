@@ -329,7 +329,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">plasmaSnow 13.32 is derived from Willem Vermin's : xSnow 3.7.5.</property>
+                <property name="label" translatable="yes">plasmassnow 13.32 is derived from Willem Vermin's : xSnow 3.7.5.</property>
                 <property name="use-markup">True</property>
               </object>
               <packing>

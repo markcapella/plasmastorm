@@ -56,34 +56,11 @@ libxdo_a_SOURCES = xdo.h xdo.c \
 	XDOVersion.h
 
 plasmastorm_SOURCES = \
-		Application.h Application.c \
-		Blowoff.h Blowoff.c \
-		ClockHelper.h ClockHelper.c \
-		ColorPicker.cpp \
-		Fallen.h Fallen.c \
-		generatedShapeIncludes.h \
-		gettext.h \
-		hashTableHelper.h hashTableHelper.cpp \
-		loadmeasure.h loadmeasure.c \
-		mainstub.h mainstub.cpp \
-		MainWindow.h MainWindow.c \
-		mygettext.h \
-		pixmaps.h pixmaps.c \
-		plasmastorm.h \
-		Prefs.h Prefs.c \
-		rootWindowHelper.h \
-		safeMalloc.h safeMalloc.c \
-		splineHelper.h splineHelper.c \
-		Stars.h Stars.c \
-		Storm.h Storm.c \
-		StormWindow.h StormWindow.c \
-		ui.glade \
-		utils.h utils.c \
-		versionHelper.h \
-		Wind.c Wind.h \
-		Windows.h Windows.c \
-		x11WindowHelper.h x11WindowHelper.c \
-		xpmHelper.h xpmHelper.c
+		Application.c Blowoff.c ClockHelper.c ColorPicker.cpp \
+		Fallen.c hashTableHelper.cpp loadmeasure.c mainstub.cpp \
+		MainWindow.c MsgBox.cpp pixmaps.c Prefs.c safeMalloc.c \
+		splineHelper.c Stars.c Storm.c StormWindow.c ui.glade \
+		utils.c Wind.c Windows.c x11WindowHelper.c xpmHelper.c
 
 nodist_plasmastorm_SOURCES = generatedGladeIncludes.h generatedIncludes.h
 
@@ -106,23 +83,24 @@ generatedIncludes.h: Pixmaps
 	$(top_srcdir)/src/generateShapeIncludes.sh $(top_srcdir)
 
 install-data-local:
-	cp 'Pixmaps/plasmastormicon.png' /usr/share/icons/hicolor/48x48/apps/
-	cp 'Pixmaps/plasmadashboardicon.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmastorm.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmastormbox.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
-	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastormicon.png
-	rm -f /usr/share/icons/hicolor/48x48/apps/plasmadashboardicon.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastorm.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastormbox.png
 
 TESTS = test1.sh
 
 # usr/local/share
 appicondir=$(datadir)/pixmaps
-appicon_DATA=Pixmaps/plasmastormicon.png Pixmaps/plasmapicker.png
+appicon_DATA=Pixmaps/plasmastorm.png \
+	Pixmaps/plasmastormpicker.png
 
 man6_MANS = plasmastorm.6
 plasmastorm.6: plasmastorm
 	echo "deprecated" > $@
 
-CLEANFILES = plasmastorm.6 generatedGladeIncludes.h generatedIncludes.h \
-	plasmastorm_out_2 plasmastorm_out_3 \
-	tarfile.inc
+CLEANFILES = plasmastorm.6 generatedGladeIncludes.h \
+	generatedIncludes.h plasmastorm_out_2 \
+	plasmastorm_out_3 tarfile.inc

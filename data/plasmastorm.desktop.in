@@ -6,7 +6,7 @@ Type=Application
 Version=4.2
 
 Exec=plasmastorm
-Icon=plasmastormicon.png
+Icon=plasmastorm.png
 Terminal=false
 StartupNotify=true
 

@@ -77,7 +77,7 @@ void createStormWindow() {
 
         gtk_window_set_icon_from_file(GTK_WINDOW(mGlobal.gtkStormWindowWidget),
             "/usr/share/icons/hicolor/48x48/apps/"
-            "plasmastormicon.png", NULL);
+            "plasmastorm.png", NULL);
 
         GtkWidget* drawing_area = gtk_drawing_area_new();
         gtk_container_add(GTK_CONTAINER(mGlobal.gtkStormWindowWidget),

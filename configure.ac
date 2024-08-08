@@ -22,7 +22,7 @@
 #-# 
 
 AC_PREREQ([2.69])
-AC_INIT([plasmastorm], [2024.07.31], [markcapella@twcny.rr.com])
+AC_INIT([plasmastorm], [2024.08.07], [markcapella@twcny.rr.com])
 AC_CONFIG_SRCDIR([src/plasmastorm.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
@@ -138,7 +138,7 @@ AC_LANG_POP([C++])
 
 PKG_CHECK_MODULES(GTK, [gtk+-3.0 gmodule-2.0])
 PKG_CHECK_MODULES(QT, [Qt5Core])
-PKG_CHECK_MODULES(X11, [x11 xpm xt xext xproto xtst xkbcommon])
+PKG_CHECK_MODULES(X11, [x11 xft xpm xt xext xproto xtst xkbcommon])
 PKG_CHECK_MODULES(GSL, [gsl])
 
 m4_include([m4/ax_pthread.m4])

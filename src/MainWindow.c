@@ -163,10 +163,6 @@ void createMainWindown() {
     // Set theme & title & icon, then show window.
     applyUICSSTheme();
 
-    gtk_window_set_icon_from_file(GTK_WINDOW(mMainWindow),
-        "/usr/share/icons/hicolor/48x48/apps/"
-        "plasmadashboardicon.png", NULL);
-
     gtk_window_set_title(GTK_WINDOW(mMainWindow),
         PLASMASTORM_TITLE_STRING);
 

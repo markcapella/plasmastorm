@@ -129,8 +129,9 @@ am_plasmastorm_OBJECTS = plasmastorm-Application.$(OBJEXT) \
 	plasmastorm-hashTableHelper.$(OBJEXT) \
 	plasmastorm-loadmeasure.$(OBJEXT) \
 	plasmastorm-mainstub.$(OBJEXT) \
-	plasmastorm-MainWindow.$(OBJEXT) plasmastorm-pixmaps.$(OBJEXT) \
-	plasmastorm-Prefs.$(OBJEXT) plasmastorm-safeMalloc.$(OBJEXT) \
+	plasmastorm-MainWindow.$(OBJEXT) plasmastorm-MsgBox.$(OBJEXT) \
+	plasmastorm-pixmaps.$(OBJEXT) plasmastorm-Prefs.$(OBJEXT) \
+	plasmastorm-safeMalloc.$(OBJEXT) \
 	plasmastorm-splineHelper.$(OBJEXT) plasmastorm-Stars.$(OBJEXT) \
 	plasmastorm-Storm.$(OBJEXT) plasmastorm-StormWindow.$(OBJEXT) \
 	plasmastorm-utils.$(OBJEXT) plasmastorm-Wind.$(OBJEXT) \
@@ -167,6 +168,7 @@ am__depfiles_remade = ./$(DEPDIR)/libxdo_a-XDOSearch.Po \
 	./$(DEPDIR)/plasmastorm-ColorPicker.Po \
 	./$(DEPDIR)/plasmastorm-Fallen.Po \
 	./$(DEPDIR)/plasmastorm-MainWindow.Po \
+	./$(DEPDIR)/plasmastorm-MsgBox.Po \
 	./$(DEPDIR)/plasmastorm-Prefs.Po \
 	./$(DEPDIR)/plasmastorm-Stars.Po \
 	./$(DEPDIR)/plasmastorm-Storm.Po \
@@ -683,34 +685,11 @@ libxdo_a_SOURCES = xdo.h xdo.c \
 	XDOVersion.h
 
 plasmastorm_SOURCES = \
-		Application.h Application.c \
-		Blowoff.h Blowoff.c \
-		ClockHelper.h ClockHelper.c \
-		ColorPicker.cpp \
-		Fallen.h Fallen.c \
-		generatedShapeIncludes.h \
-		gettext.h \
-		hashTableHelper.h hashTableHelper.cpp \
-		loadmeasure.h loadmeasure.c \
-		mainstub.h mainstub.cpp \
-		MainWindow.h MainWindow.c \
-		mygettext.h \
-		pixmaps.h pixmaps.c \
-		plasmastorm.h \
-		Prefs.h Prefs.c \
-		rootWindowHelper.h \
-		safeMalloc.h safeMalloc.c \
-		splineHelper.h splineHelper.c \
-		Stars.h Stars.c \
-		Storm.h Storm.c \
-		StormWindow.h StormWindow.c \
-		ui.glade \
-		utils.h utils.c \
-		versionHelper.h \
-		Wind.c Wind.h \
-		Windows.h Windows.c \
-		x11WindowHelper.h x11WindowHelper.c \
-		xpmHelper.h xpmHelper.c
+		Application.c Blowoff.c ClockHelper.c ColorPicker.cpp \
+		Fallen.c hashTableHelper.cpp loadmeasure.c mainstub.cpp \
+		MainWindow.c MsgBox.cpp pixmaps.c Prefs.c safeMalloc.c \
+		splineHelper.c Stars.c Storm.c StormWindow.c ui.glade \
+		utils.c Wind.c Windows.c x11WindowHelper.c xpmHelper.c
 
 nodist_plasmastorm_SOURCES = generatedGladeIncludes.h generatedIncludes.h
 BUILT_SOURCES = generatedGladeIncludes.h generatedIncludes.h $(tarfile_inc)
@@ -723,11 +702,13 @@ TESTS = test1.sh
 
 # usr/local/share
 appicondir = $(datadir)/pixmaps
-appicon_DATA = Pixmaps/plasmastormicon.png Pixmaps/plasmapicker.png
+appicon_DATA = Pixmaps/plasmastorm.png \
+	Pixmaps/plasmastormpicker.png
+
 man6_MANS = plasmastorm.6
-CLEANFILES = plasmastorm.6 generatedGladeIncludes.h generatedIncludes.h \
-	plasmastorm_out_2 plasmastorm_out_3 \
-	tarfile.inc
+CLEANFILES = plasmastorm.6 generatedGladeIncludes.h \
+	generatedIncludes.h plasmastorm_out_2 \
+	plasmastorm_out_3 tarfile.inc
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -832,6 +813,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-ColorPicker.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Fallen.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-MainWindow.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-MsgBox.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Prefs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Stars.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plasmastorm-Storm.Po@am__quote@ # am--include-marker
@@ -1203,6 +1185,20 @@ plasmastorm-mainstub.obj: mainstub.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='mainstub.cpp' object='plasmastorm-mainstub.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmastorm-mainstub.obj `if test -f 'mainstub.cpp'; then $(CYGPATH_W) 'mainstub.cpp'; else $(CYGPATH_W) '$(srcdir)/mainstub.cpp'; fi`
+
+plasmastorm-MsgBox.o: MsgBox.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmastorm-MsgBox.o -MD -MP -MF $(DEPDIR)/plasmastorm-MsgBox.Tpo -c -o plasmastorm-MsgBox.o `test -f 'MsgBox.cpp' || echo '$(srcdir)/'`MsgBox.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-MsgBox.Tpo $(DEPDIR)/plasmastorm-MsgBox.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MsgBox.cpp' object='plasmastorm-MsgBox.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmastorm-MsgBox.o `test -f 'MsgBox.cpp' || echo '$(srcdir)/'`MsgBox.cpp
+
+plasmastorm-MsgBox.obj: MsgBox.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT plasmastorm-MsgBox.obj -MD -MP -MF $(DEPDIR)/plasmastorm-MsgBox.Tpo -c -o plasmastorm-MsgBox.obj `if test -f 'MsgBox.cpp'; then $(CYGPATH_W) 'MsgBox.cpp'; else $(CYGPATH_W) '$(srcdir)/MsgBox.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/plasmastorm-MsgBox.Tpo $(DEPDIR)/plasmastorm-MsgBox.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MsgBox.cpp' object='plasmastorm-MsgBox.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(plasmastorm_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o plasmastorm-MsgBox.obj `if test -f 'MsgBox.cpp'; then $(CYGPATH_W) 'MsgBox.cpp'; else $(CYGPATH_W) '$(srcdir)/MsgBox.cpp'; fi`
 install-man6: $(man6_MANS)
 	@$(NORMAL_INSTALL)
 	@list1='$(man6_MANS)'; \
@@ -1646,6 +1642,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/plasmastorm-ColorPicker.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Fallen.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-MainWindow.Po
+	-rm -f ./$(DEPDIR)/plasmastorm-MsgBox.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Prefs.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Stars.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Storm.Po
@@ -1715,6 +1712,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/plasmastorm-ColorPicker.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Fallen.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-MainWindow.Po
+	-rm -f ./$(DEPDIR)/plasmastorm-MsgBox.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Prefs.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Stars.Po
 	-rm -f ./$(DEPDIR)/plasmastorm-Storm.Po
@@ -1788,12 +1786,12 @@ generatedIncludes.h: Pixmaps
 	$(top_srcdir)/src/generateShapeIncludes.sh $(top_srcdir)
 
 install-data-local:
-	cp 'Pixmaps/plasmastormicon.png' /usr/share/icons/hicolor/48x48/apps/
-	cp 'Pixmaps/plasmadashboardicon.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmastorm.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmastormbox.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
-	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastormicon.png
-	rm -f /usr/share/icons/hicolor/48x48/apps/plasmadashboardicon.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastorm.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastormbox.png
 plasmastorm.6: plasmastorm
 	echo "deprecated" > $@
 

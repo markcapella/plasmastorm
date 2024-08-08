@@ -172,7 +172,7 @@ bool startQPickerDialog(char* inElementTag, char* inColorString) {
     // Create initial dialog globals.
     mColorDialog->setWindowTitle("Select Color");
     mColorApp->setWindowIcon(
-        QIcon("/usr/local/share/pixmaps/plasmapicker.png"));
+        QIcon("/usr/local/share/pixmaps/plasmastormpicker.png"));
     mColorDialog->setOption(QColorDialog::DontUseNativeDialog);
     mColorDialog->setQPickerActive(true);
     mColorDialog->setAlreadyInitialized(true);

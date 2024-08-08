@@ -57,6 +57,7 @@
 #include "loadmeasure.h"
 #include "mainstub.h"
 #include "MainWindow.h"
+#include "MsgBox.h"
 #include "mygettext.h"
 #include "Prefs.h"
 #include "safeMalloc.h"
@@ -100,18 +101,15 @@ int startApplication(int argc, char *argv[]) {
     printf("Available languages are:\n%s.\n\n",
         LANGUAGES);
 
-    printf("GTK version: %s\n", ui_gtk_version());
-    #ifdef GSL_VERSION
-        fprintf(stdout, "GSL version: %s\n\n", GSL_VERSION);
-    #else
-        fprintf(stdout, "GSL version: UNKNOWN\n\n");
-    #endif
+    printf("GTK version : %s\n", ui_gtk_version());
+    printf("GTK required: %s\n\n", ui_gtk_required());
 
     if (!isGtkVersionValid()) {
-        printf("%splasmastorm: needs gtk version >= %s, "
-            "found version %s.%s\n", COLOR_RED,
-            ui_gtk_required(), ui_gtk_version(), COLOR_NORMAL);
-        return 0;
+        printf("%splasmastorm: GTK Version is insufficient - FATAL.%s\n",
+            COLOR_RED, COLOR_NORMAL);
+        displayMessageBox(100, 200, 300, 66, "plasmastorm",
+            "GTK Version is insufficient - FATAL.");
+        return 1;
     }
 
     printf("%splasmastorm: Desktop %s detected.%s\n\n",
@@ -122,9 +120,13 @@ int startApplication(int argc, char *argv[]) {
     const bool isWaylandPresent = getenv("WAYLAND_DISPLAY") &&
         getenv("WAYLAND_DISPLAY") [0];
     if (isWaylandPresent) {
-        printf("%splasmastorm: Wayland display was "
-            "detected - FATAL.%s\n\n", COLOR_RED, COLOR_NORMAL);
-        exit(1);
+        printf("%splasmastorm: Oh noes! plasmastorm is an x11 "
+            "app, & can\'t be run on a Wayland desktop.%s\n\n",
+            COLOR_RED, COLOR_NORMAL);
+        displayMessageBox(100, 200, 606, 66, "plasmastorm",
+            "Oh noes! plasmastorm is an x11 app, & can\'t "
+            "be run on a Wayland desktop.");
+        return 1;
     }
 
     // Before starting GTK, ensure x11 backend is used.
@@ -169,20 +171,25 @@ int startApplication(int argc, char *argv[]) {
     mGlobal.chosenWorkSpace = 0;
     mGlobal.workspaceArray[0] = 0;
 
-
     mGlobal.display = XOpenDisplay("");
     if (mGlobal.display == NULL) {
-        printf("plasmastorm: cannot connect "
-            "to X server - FATAL.\n"),
-        exit(1);
+        printf("plasmastorm: X11 Does not seem to be "
+            "available - FATAL.\n");
+
+        displayMessageBox(100, 200, 360, 66, "plasmastorm",
+            "X11 Does not seem to be available - FATAL.");
+        return 1;
     }
 
     mGlobal.xdo = xdo_new_with_opened_display(
         mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
-        printf("plasmastorm: needs xdo and it reports "
-            "no displays - FATAL.\n");
-        exit(1);
+        printf("plasmastorm: XDO reports no displays - FATAL.\n");
+
+        displayMessageBox(100, 200, 284, 66, "plasmastorm",
+            "XDO reports no displays - FATAL.");
+        XCloseDisplay(mGlobal.display);
+        return 1;
     }
 
     // Init flags module.
@@ -262,7 +269,6 @@ int startApplication(int argc, char *argv[]) {
         XFixesDisplayCursorNotifyMask);
 
     clearStormWindow();
-
     createMainWindown();
 
     // Hide us if starting minimized.
@@ -320,8 +326,8 @@ int startApplication(int argc, char *argv[]) {
         COLOR_BLUE, COLOR_NORMAL);
 
     // Display termination messages to MessageBox or STDOUT.
-     printf("%s\nThanks for using plasmastorm, you rock !%s\n",
-         COLOR_GREEN, COLOR_NORMAL);
+    printf("%s\nThanks for using plasmastorm, you rock !%s\n",
+        COLOR_GREEN, COLOR_NORMAL);
 
     // More terminates.
     XClearWindow(mGlobal.display, mGlobal.StormWindow);
