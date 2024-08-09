@@ -27,9 +27,7 @@ using namespace std;
 #define COLOR_NORMAL "\033[0m"
 
 Display* mDisplay;
-
 Window mMsgBox;
-
 XftFont* mFont;
 
 const XftColor mFontColor = { .pixel = 0x0, .color = { 
@@ -72,16 +70,13 @@ void displayMessageBox(int xPos, int yPos, int width, int height,
     XSetWMName(mDisplay, mMsgBox, &properties);
 
     // Set title icon.
-    char* appName = strdup("plasmastorm");
     char* iconName = strdup("plasmastormbox");
-
     XClassHint* classHint = XAllocClassHint();
     if (classHint) {
         classHint->res_class = iconName;
-        classHint->res_name = appName;
+        classHint->res_name = iconName;
         XSetClassHint(mDisplay, mMsgBox, classHint);
     }
-
     XTextProperty iconProperty;
     XStringListToTextProperty(&iconName, 1, &iconProperty);
     XSetWMIconName(mDisplay, mMsgBox, &iconProperty);
@@ -91,9 +86,8 @@ void displayMessageBox(int xPos, int yPos, int width, int height,
     XMoveWindow(mDisplay, mMsgBox, xPos, yPos);
 
     // Select observable x11 events.
-    XSelectInput(mDisplay, mMsgBox, ExposureMask);
-
     // Select observable x11 client messages.
+    XSelectInput(mDisplay, mMsgBox, ExposureMask);
     Atom mDeleteMessage = XInternAtom(mDisplay,
         "WM_DELETE_WINDOW", False);
     XSetWMProtocols(mDisplay, mMsgBox, &mDeleteMessage, 1);
@@ -115,9 +109,6 @@ void displayMessageBox(int xPos, int yPos, int width, int height,
                 XftDraw* textDrawable = XftDrawCreate(mDisplay, mMsgBox,
                     DefaultVisual(mDisplay, DefaultScreen(mDisplay)),
                    DefaultColormap(mDisplay, DefaultScreen(mDisplay)));
-
-                // XDrawString(mDisplay, mMsgBox, DefaultGC(mDisplay, 0),
-                //     LEFT_MARGIN, TOP_MARGIN, message, strlen(message));
 
                 XftDrawString8(textDrawable, &mFontColor, mFont,
                     LEFT_MARGIN, TOP_MARGIN, (const FcChar8*) message,

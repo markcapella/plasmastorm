@@ -121,7 +121,7 @@ int startApplication(int argc, char *argv[]) {
         getenv("WAYLAND_DISPLAY") [0];
     if (isWaylandPresent) {
         printf("%splasmastorm: Oh noes! plasmastorm is an x11 "
-            "app, & can\'t be run on a Wayland desktop.%s\n\n",
+            "app, & can\'t be run on a Wayland desktop.%s\n",
             COLOR_RED, COLOR_NORMAL);
         displayMessageBox(100, 200, 606, 66, "plasmastorm",
             "Oh noes! plasmastorm is an x11 app, & can\'t "
@@ -175,7 +175,6 @@ int startApplication(int argc, char *argv[]) {
     if (mGlobal.display == NULL) {
         printf("plasmastorm: X11 Does not seem to be "
             "available - FATAL.\n");
-
         displayMessageBox(100, 200, 360, 66, "plasmastorm",
             "X11 Does not seem to be available - FATAL.");
         return 1;
@@ -185,7 +184,6 @@ int startApplication(int argc, char *argv[]) {
         mGlobal.display, NULL, 0);
     if (mGlobal.xdo == NULL) {
         printf("plasmastorm: XDO reports no displays - FATAL.\n");
-
         displayMessageBox(100, 200, 284, 66, "plasmastorm",
             "XDO reports no displays - FATAL.");
         XCloseDisplay(mGlobal.display);
