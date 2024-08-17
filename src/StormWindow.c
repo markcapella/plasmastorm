@@ -55,8 +55,9 @@ void createStormWindow() {
     mGlobal.hasDestopWindow = true;
 
     // Try to create a transparent clickthrough window.
-    GtkWidget* stormWindowWidget =
-        gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    GtkWidget* stormWindowWidget = gtk_message_dialog_new(NULL,
+        GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER,
+        GTK_BUTTONS_NONE, "unused");
 
     gtk_widget_set_can_focus(stormWindowWidget, TRUE);
     gtk_window_set_decorated(GTK_WINDOW(stormWindowWidget), FALSE);
