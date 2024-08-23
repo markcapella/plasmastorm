@@ -43,7 +43,7 @@ static int wanty = 0;
 static int mIsSticky = 0;
 
 /** *********************************************************************
- ** This method ...
+ ** This method creates the main Storm Window.
  **/
 void createStormWindow() {
     mGlobal.Rootwindow =
@@ -53,21 +53,25 @@ void createStormWindow() {
     mGlobal.isCairoAvailable = false;
 
     mGlobal.hasDestopWindow = true;
-
-    // Try to create a transparent clickthrough window.
-    GtkWidget* stormWindowWidget = gtk_message_dialog_new(NULL,
-        GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER,
-        GTK_BUTTONS_NONE, "unused");
-
-    gtk_widget_set_can_focus(stormWindowWidget, TRUE);
-    gtk_window_set_decorated(GTK_WINDOW(stormWindowWidget), FALSE);
-    gtk_window_set_type_hint(GTK_WINDOW(stormWindowWidget),
-        GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-
-    // Create transparent StormWindow widget.
     Window stormX11Window;
     GdkWindow* stormGdkWindow;
 
+    // Try to create a transparent clickthrough window.
+    GtkWidget* stormWindowWidget = (GtkWidget*) g_object_new(
+        GTK_TYPE_MESSAGE_DIALOG, "use-header-bar", false,
+        "message-type", GTK_MESSAGE_OTHER,
+        "buttons", GTK_BUTTONS_NONE, NULL);
+
+    if (GTK_IS_BIN(stormWindowWidget)) {
+        GtkWidget* child = gtk_bin_get_child(GTK_BIN(
+            stormWindowWidget));
+        if (child) {
+            gtk_container_remove(GTK_CONTAINER(
+                stormWindowWidget), child);
+        }
+    }
+
+    // Create transparent StormWindow widget.
     if (createTransparentWindow(mGlobal.display, stormWindowWidget,
         Flags.AllWorkspaces, true, &stormGdkWindow,
         &stormX11Window, &wantx, &wanty)) {
@@ -75,14 +79,6 @@ void createStormWindow() {
         mGlobal.gtkStormWindowWidget = stormWindowWidget;
         mGlobal.isStormWindowTransparent = true;
         mGlobal.StormWindow = stormX11Window;
-
-        gtk_window_set_icon_from_file(GTK_WINDOW(mGlobal.gtkStormWindowWidget),
-            "/usr/share/icons/hicolor/48x48/apps/"
-            "plasmastorm.png", NULL);
-
-        GtkWidget* drawing_area = gtk_drawing_area_new();
-        gtk_container_add(GTK_CONTAINER(mGlobal.gtkStormWindowWidget),
-            drawing_area);
 
         g_signal_connect(mGlobal.gtkStormWindowWidget, "draw",
             G_CALLBACK(handleTransparentWindowDrawEvents), NULL);
@@ -167,10 +163,10 @@ bool createTransparentWindow(Display* display,
         *x11_window = None;
     }
 
-    // Implement window.
-    gtk_widget_set_app_paintable(inputStormWindow, TRUE);
-    gtk_window_set_decorated(GTK_WINDOW(inputStormWindow), FALSE);
-    gtk_window_set_accept_focus(GTK_WINDOW(inputStormWindow), FALSE);
+    // Implement Dialog.
+    gtk_widget_set_app_paintable(inputStormWindow, true);
+    gtk_window_set_decorated(GTK_WINDOW(inputStormWindow), false);
+    gtk_window_set_accept_focus(GTK_WINDOW(inputStormWindow), false);
 
     g_signal_connect(inputStormWindow, "draw",
         G_CALLBACK(setStormWindowAttributes), NULL);
@@ -275,17 +271,15 @@ int setStormWindowAttributes(GtkWidget* stormWindow) {
     // storm window, then destroy it.
     // TODO: Why? ... "Does not work as expected."
 
-    GdkWindow* gdk_window1 = gtk_widget_get_window(stormWindow);
-    //const int Usepassthru = 0;
-    //if (Usepassthru) {
-    //    gdk_window_set_pass_through(gdk_window1, true);
-    //} else {
-        cairo_region_t* cairo_region1 = cairo_region_create();
-        gdk_window_input_shape_combine_region(gdk_window1,
-            cairo_region1, 0, 0);
-        cairo_region_destroy(cairo_region1);
-    //}
+    GdkWindow* tempWindow = gtk_widget_get_window(stormWindow);
+    cairo_region_t* tempRegion = cairo_region_create();
 
+    gdk_window_input_shape_combine_region(tempWindow,
+         tempRegion, 0, 0);
+
+    cairo_region_destroy(tempRegion);
+
+    // Set window positioning.
     if (!g_object_get_data(G_OBJECT(stormWindow), "trans_nobelow")) {
         if (g_object_get_data(G_OBJECT(stormWindow), "trans_below")) {
             setTransparentWindowBelow(GTK_WINDOW(stormWindow));
