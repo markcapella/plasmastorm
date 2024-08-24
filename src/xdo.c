@@ -62,7 +62,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "xdo.h"
 #include "XDOSymbolMap.h"
-#include "XDOVersion.h"
 
 #include "ColorCodes.h"
 
@@ -190,8 +189,6 @@ void xdo_free(xdo_t *xdo) {
 
     free(xdo);
 }
-
-const char *xdo_version(void) { return XDO_VERSION; }
 
 int xdo_wait_for_window_map_state_orig(
     const xdo_t *xdo, Window wid, int map_state);

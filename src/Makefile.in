@@ -681,8 +681,7 @@ libxdo_a_CPPFLAGS = $(X11_CFLAGS)
 noinst_LIBRARIES = libxdo.a
 libxdo_a_SOURCES = xdo.h xdo.c \
 	XDOSearch.h XDOSearch.c \
-	XDOSymbolMap.h \
-	XDOVersion.h
+	XDOSymbolMap.h
 
 plasmastorm_SOURCES = \
 		Application.c Blowoff.c ClockHelper.c ColorPicker.cpp \

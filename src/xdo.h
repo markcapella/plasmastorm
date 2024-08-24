@@ -207,11 +207,6 @@ xdo_t *xdo_new_with_opened_display(
     Display *xdpy, const char *display, int close_display_when_freed);
 
 /**
- * Return a string representing the version of this library
- */
-const char *xdo_version(void);
-
-/**
  * Free and destroy an xdo_t instance.
  *
  * If close_display_when_freed is set, then we will also close the Display.
