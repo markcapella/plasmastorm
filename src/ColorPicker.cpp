@@ -19,9 +19,6 @@
 #-# 
 */
 
-/** *********************************************************************
- ** Qt-style ColorPicker.cpp.
- **/
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,9 +36,10 @@ using namespace std;
 #include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QWidget>
 
+#include "ColorPicker.h"
 
-/** *********************************************************************
- ** Main Color Picker class def.
+/** *******************************************************
+ ** Qt-style ColorPicker.
  **/
 class PlasmaColorDialog : public QColorDialog {
     private:
@@ -69,15 +67,24 @@ class PlasmaColorDialog : public QColorDialog {
             setPlasmaColor(currentColor());
             hide();
         }
-        void closeEvent(__attribute__((unused)) QCloseEvent *event) {
+        void closeEvent(__attribute__((unused))
+            QCloseEvent *event) {
             hide();
         }
 
+        // Helpers.
         bool isAlreadyInitialized() {
             return mAlreadyInitialized;
         }
         void setAlreadyInitialized(bool initState) {
             mAlreadyInitialized = initState;
+        }
+
+        bool isAlreadyTerminated() {
+            return mAlreadyTerminated;
+        }
+        void setAlreadyTerminated(bool termState) {
+            mAlreadyTerminated = termState;
         }
 
         bool isQPickerActive() {
@@ -94,13 +101,6 @@ class PlasmaColorDialog : public QColorDialog {
             mActiveCallerName = callerName;
         }
 
-        bool isAlreadyTerminated() {
-            return mAlreadyTerminated;
-        }
-        void setAlreadyTerminated(bool termState) {
-            mAlreadyTerminated = termState;
-        }
-
         QColor getPlasmaColor() {
             return mColor;
         }
@@ -109,96 +109,32 @@ class PlasmaColorDialog : public QColorDialog {
         }
 };
 
-/** *********************************************************************
+/** *******************************************************
  ** Main Globals.
  **/
-static int argc = 1;
-static std::string argv[] = { "" };
-static QApplication* mColorApp = new QApplication(argc, (char**) argv);
 
-static PlasmaColorDialog* mColorDialog = new PlasmaColorDialog();
+QApplication* mColorApp;
+PlasmaColorDialog* mColorDialog;
 
 
-/** *********************************************************************
- ** Simple Main class extern getter / setters.
+/** *******************************************************
+ ** Show the main colorpicker dialog box.
  **/
 extern "C"
-bool isQPickerActive() {
-    return mColorDialog->isQPickerActive();
-};
+bool initQPickerDialog() {
+    int argc = 1;
+    std::string argv[] = { "plasmastormpicker" };
 
-extern "C"
-char* getQPickerCallerName() {
-    return mColorDialog->getQPickerCallerName();
-}
+    mColorApp = new QApplication(argc, (char**) argv);
+    mColorApp->setWindowIcon(QIcon(
+        "/usr/local/share/pixmaps/plasmastormpicker.png"));
 
-extern "C"
-bool isQPickerVisible() {
-    return mColorDialog->isVisible();
-}
+    mColorDialog = new PlasmaColorDialog();
 
-extern "C"
-bool isQPickerTerminated() {
-    return mColorDialog->isAlreadyTerminated();
-};
-
-
-extern "C"
-int getQPickerRed() {
-    return mColorDialog->getPlasmaColor().red();
-};
-
-extern "C"
-int getQPickerGreen() {
-    return mColorDialog->getPlasmaColor().green();
-};
-
-extern "C"
-int getQPickerBlue() {
-    return mColorDialog->getPlasmaColor().blue();
-};
-
-
-/** *********************************************************************
- ** Show the main colorpicker dialog box, allowing user interaction.
- **/
-extern "C"
-bool startQPickerDialog(char* inElementTag, char* inColorString) {
-    // Early out if we're alreaady active.
-    if (mColorDialog->isQPickerActive()) {
-        return false;
-    }
-
-    // Create initial dialog globals.
-    mColorDialog->setWindowTitle("Select Color");
-    mColorApp->setWindowIcon(
-        QIcon("/usr/local/share/pixmaps/plasmastormpicker.png"));
-    mColorDialog->setOption(QColorDialog::DontUseNativeDialog);
-    mColorDialog->setQPickerActive(true);
-    mColorDialog->setAlreadyInitialized(true);
-
-    // Create this dialogs specifics.
-    mColorDialog->setQPickerCallerName(inElementTag);
-    QColor inColor(inColorString);
-    if (inColor.isValid()) {
-        mColorDialog->setPlasmaColor(inColor);
-    }
-    mColorDialog->setCurrentColor(mColorDialog->getPlasmaColor());
-
-    mColorDialog->open();
     return true;
 }
 
-/** *********************************************************************
- ** Close the main colorPicker dialog box.
- **/
-extern "C"
-void endQPickerDialog() {
-    mColorDialog->setQPickerActive(false);
-    mColorDialog->setQPickerCallerName(nullptr);
-}
-
-/** *********************************************************************
+/** *******************************************************
  ** Uninit all and terminate.
  **/
 extern "C"
@@ -211,3 +147,78 @@ void uninitQPickerDialog() {
         mColorApp = nullptr;
     }
 }
+
+/** *******************************************************
+ ** Show the main colorpicker dialog box.
+ **/
+extern "C"
+bool startQPickerDialog(char* inElementTag,
+    char* inColorString) {
+
+    // Early out if we're alreaady active.
+    if (mColorDialog->isQPickerActive()) {
+        return false;
+    }
+
+    // Create initial dialog globals.
+    mColorDialog->setWindowTitle("Select Color");
+    mColorDialog->setOption(QColorDialog::DontUseNativeDialog);
+    mColorDialog->setQPickerActive(true);
+    mColorDialog->setAlreadyInitialized(true);
+
+    // Create this dialogs specifics.
+    mColorDialog->setQPickerCallerName(inElementTag);
+    QColor inColor(inColorString);
+    if (inColor.isValid()) {
+        mColorDialog->setPlasmaColor(inColor);
+    }
+    mColorDialog->setCurrentColor(
+        mColorDialog->getPlasmaColor());
+
+    mColorDialog->open();
+
+    return true;
+}
+
+/** *******************************************************
+ ** Close the main colorPicker dialog box.
+ **/
+extern "C"
+void endQPickerDialog() {
+    mColorDialog->setQPickerActive(false);
+    mColorDialog->setQPickerCallerName(nullptr);
+}
+
+/** *******************************************************
+ ** Helper getter / setters.
+ **/
+extern "C"
+bool isQPickerActive() {
+    return mColorDialog->isQPickerActive();
+};
+extern "C"
+bool isQPickerVisible() {
+    return mColorDialog->isVisible();
+}
+extern "C"
+bool isQPickerTerminated() {
+    return mColorDialog->isAlreadyTerminated();
+};
+
+extern "C"
+char* getQPickerCallerName() {
+    return mColorDialog->getQPickerCallerName();
+}
+
+extern "C"
+int getQPickerRed() {
+    return mColorDialog->getPlasmaColor().red();
+};
+extern "C"
+int getQPickerGreen() {
+    return mColorDialog->getPlasmaColor().green();
+};
+extern "C"
+int getQPickerBlue() {
+    return mColorDialog->getPlasmaColor().blue();
+};

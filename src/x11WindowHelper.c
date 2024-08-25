@@ -46,10 +46,6 @@
 #include "Windows.h"
 #include "x11WindowHelper.h"
 
-/***********************************************************
- * Module Method stubs.
- */
-
 
 /** *********************************************************************
  ** This method ...
@@ -60,9 +56,6 @@ void getX11WindowsList(WinInfo** winInfoList, int* numberOfWindows) {
 
     getRawWindowsList(winInfoList, numberOfWindows);
     getFinishedWindowsList(winInfoList, numberOfWindows);
-
-    // printf("x11WindowHelper: getX11WindowsList() "
-    //    "numberOfWindows: %i\n", *numberOfWindows);
 }
 
 /** *********************************************************************
@@ -662,10 +655,6 @@ void
 logAllWindowsStackedTopToBottom() {
     Window* stackedWins;
     int numberOfStackedWins = getX11StackedWindowsList(&stackedWins);
-
-    printf("\n%splasmastorm::WindowHelper "
-        "logAllWindowsStackedTopToBottom()\n   numberOfStackedWins: "
-        "%i.%s\n", COLOR_BLUE, numberOfStackedWins, COLOR_NORMAL);
 
     fprintf(stdout, "\n");
     for (int i = numberOfStackedWins - 1; i >= 0; i--) {

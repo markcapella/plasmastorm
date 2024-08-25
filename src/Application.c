@@ -53,6 +53,7 @@
 #include "Blowoff.h"
 #include "ClockHelper.h"
 #include "ColorCodes.h"
+#include "ColorPicker.h"
 #include "Fallen.h"
 #include "loadmeasure.h"
 #include "mainstub.h"
@@ -94,7 +95,9 @@ int mX11LastErrorCode = 0;
 /** *********************************************************************
  ** Application start method. 
  **/
-int startApplication(int argc, char *argv[]) {
+int startApplication(int argc, char* argv[]) {
+    initQPickerDialog();
+
     // Log info, version checks.
     logAppVersion();
 
@@ -267,7 +270,7 @@ int startApplication(int argc, char *argv[]) {
         XFixesDisplayCursorNotifyMask);
 
     clearStormWindow();
-    createMainWindown();
+    createMainWindow();
 
     // Hide us if starting minimized.
     if (Flags.mHideMenu) {
@@ -305,8 +308,8 @@ int startApplication(int argc, char *argv[]) {
     respondToWorkspaceSettingsChange();
 
     // Log Storming window status.
-    printf("%splasmastorm: It\'s Storming in:%s\n",
-        COLOR_CYAN, COLOR_NORMAL);
+    printf("%s\nplasmastorm: It\'s Storming in: [0x%08lx]%s\n",
+        COLOR_BLUE, mGlobal.StormWindow, COLOR_NORMAL);
 
     logWindow(mGlobal.StormWindow);
     fflush(stdout);

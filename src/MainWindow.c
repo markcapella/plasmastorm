@@ -129,7 +129,7 @@ GtkWidget* getMainWindow() {
 /** *********************************************************************
  ** Main UI Form control.
  **/
-void createMainWindown() {
+void createMainWindow() {
     mIsUserThreadRunning = true;
 
     builder = gtk_builder_new_from_string(mStringBuilder, -1);

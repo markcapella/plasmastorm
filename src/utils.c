@@ -439,5 +439,5 @@ void logAppVersion() {
         printf("*");
     }
 
-    printf("\n\n   %s\n", VERSIONBY);
+    printf("\n\n%s\n", VERSIONBY);
 }

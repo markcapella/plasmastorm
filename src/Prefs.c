@@ -73,7 +73,7 @@ void setAllPrefDefaultValues() {
     DefaultFlags.StormSaturationFactor = 100;
 
     DefaultFlags.ShowStars = 1;
-    DefaultFlags.MaxStarCount = 100;
+    DefaultFlags.MaxStarCount = 50;
 
     DefaultFlags.ShowWind = 1;
     DefaultFlags.WhirlFactor = 100;

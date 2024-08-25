@@ -128,9 +128,20 @@ void createStormWindow() {
         xdo_move_window(mGlobal.xdo, mGlobal.StormWindow,
             mGlobal.StormWindowX, mGlobal.StormWindowY);
     }
+
+    // Log & wait for StormWindow visibility.
+    logCurrentTimestamp();
+    printf("%splasmastorm: createStormWindow() - "
+        "Waiting for StormWindow to be visible.%s\n",
+        COLOR_YELLOW, COLOR_NORMAL);
     xdo_wait_for_window_map_state(mGlobal.xdo,
         mGlobal.StormWindow, IsViewable);
+    logCurrentTimestamp();
+    printf("%splasmastorm: createStormWindow() - "
+        "StormWindow is visible.%s\n",
+        COLOR_GREEN, COLOR_NORMAL);
 
+    // Init screen size.
     initDisplayDimensions();
 
     setStormWindowScale();

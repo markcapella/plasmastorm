@@ -84,10 +84,12 @@ generatedIncludes.h: Pixmaps
 install-data-local:
 	cp 'Pixmaps/plasmastorm.png' /usr/share/icons/hicolor/48x48/apps/
 	cp 'Pixmaps/plasmastormbox.png' /usr/share/icons/hicolor/48x48/apps/
+	cp 'Pixmaps/plasmastormpicker.png' /usr/share/icons/hicolor/48x48/apps/
 
 uninstall-local:
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastorm.png
 	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastormbox.png
+	rm -f /usr/share/icons/hicolor/48x48/apps/plasmastormpicker.png
 
 TESTS = test1.sh
 

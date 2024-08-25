@@ -160,28 +160,33 @@ void updateDisplayDimensions() {
 
     lockFallenSemaphore();
 
+    // Log & wait for StormWindow visibility.
+    logCurrentTimestamp();
+    printf("%splasmastorm: updateDisplayDimensions() - "
+        "Waiting for StormWindow to be visible.%s\n",
+        COLOR_YELLOW, COLOR_NORMAL);
     xdo_wait_for_window_map_state(mGlobal.xdo,
         mGlobal.StormWindow, IsViewable);
+    logCurrentTimestamp();
+    printf("%splasmastorm: updateDisplayDimensions() - "
+        "StormWindow is visible.%s\n",
+        COLOR_GREEN, COLOR_NORMAL);
 
+    // Get window size.
     Window root;
     int x, y;
     unsigned int w, h, b, d;
-    if (!XGetGeometry(mGlobal.display,
-        mGlobal.StormWindow, &root, &x, &y, &w, &h, &b, &d)) {
-        printf("plasmastorm lost the display during "
-            "updateDisplayDimensions() - FATAL.\n");
-        uninitQPickerDialog();
-        exit(1);
-    }
+    XGetGeometry(mGlobal.display, mGlobal.StormWindow,
+        &root, &x, &y, &w, &h, &b, &d);
 
     mGlobal.StormWindowWidth = w;
     mGlobal.StormWindowHeight = h +
         Flags.DesktopFallenTopOffset;
 
+    // Updates based on new size.
     updateFallenAtBottom();
     boundMaxDesktopFallenDepth();
     clearStormWindow();
-
     unlockFallenSemaphore();
 }
 
@@ -643,7 +648,7 @@ void logCurrentTimestamp() {
         seconds++;
     }
 
-    // Log parseed date. Out: |Mon Feb 19 11:59:09 2024.### : |
+    // Log parsed date. Out: |Mon Feb 19 11:59:09 2024.### : |
     printf("%.*s.", lenDateStringWithoutEOL, dateStringWithEOL);
     printf("%03ld : ", (intmax_t) milliseconds);
 }

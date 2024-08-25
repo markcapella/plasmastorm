@@ -28,7 +28,7 @@
 
 extern GtkWidget* getMainWindow();
 
-extern void createMainWindown();
+extern void createMainWindow();
 void init_pixmaps();
 
 extern int isGtkVersionValid();
