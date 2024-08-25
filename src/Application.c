@@ -53,7 +53,6 @@
 #include "Blowoff.h"
 #include "ClockHelper.h"
 #include "ColorCodes.h"
-#include "ColorPicker.h"
 #include "Fallen.h"
 #include "loadmeasure.h"
 #include "mainstub.h"
@@ -96,8 +95,6 @@ int mX11LastErrorCode = 0;
  ** Application start method. 
  **/
 int startApplication(int argc, char* argv[]) {
-    initQPickerDialog();
-
     // Log info, version checks.
     logAppVersion();
 
