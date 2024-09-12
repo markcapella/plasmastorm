@@ -984,10 +984,10 @@ int drawAllStormItemsInItemset(cairo_t* cr) {
 
         // Draw.
         if (!stormItem->isFrozen && !stormItem->fluff) {
-            my_cairo_paint_with_alpha(cr, alpha);
+            paintCairoContextWithAlpha(cr, alpha);
         }
 
-        // Update 
+        // Then update.
         stormItem->xIntPosition = lrint(stormItem->xRealPosition);
         stormItem->yIntPosition = lrint(stormItem->yRealPosition);
     }

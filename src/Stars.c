@@ -38,20 +38,20 @@
  ** Module globals and consts.
  **/
 
-static const int STAR_SIZE = 10;
-static int mNumberOfStars;
-static StarCoordinate* mStarCoordinates = NULL;
+const int STAR_SIZE = 8;
+const float LOCAL_SCALE = 0.8;
 
-// From GTK pango-color-table.h
 #define STARANIMATIONS 4
+cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
 
-static cairo_surface_t* mStarSurfaceArray[STARANIMATIONS];
-
-static char* mStarColorArray[STARANIMATIONS] =
+char* mStarColorArray[STARANIMATIONS] =
     { "gold", "gold1", "gold4", "orange" };
 
-static const float LOCAL_SCALE = 0.8;
-static int mPreviousAppScale = 100;
+int mNumberOfStars;
+StarCoordinate* mStarCoordinates = NULL;
+
+int mPreviousAppScale = 100;
+
 
 /** *********************************************************************
  ** This method initializes the Stars module.
@@ -200,7 +200,7 @@ void drawStarsFrame(cairo_t *cr) {
 
         cairo_set_source_surface(cr, mStarSurfaceArray[star->color],
             star->x, star->y);
-        my_cairo_paint_with_alpha(cr, (0.01 * (100 -
+        paintCairoContextWithAlpha(cr, (0.01 * (100 -
             Flags.Transparency)));
     }
 

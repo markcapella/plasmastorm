@@ -231,11 +231,11 @@ void remove_from_mainloop(guint *tag) {
 /** *********************************************************************
  ** This method ...
  **/
-void my_cairo_paint_with_alpha(cairo_t *cr, double alpha) {
+void paintCairoContextWithAlpha(cairo_t* cc, double alpha) {
     if (alpha > 0.9) {
-        cairo_paint(cr);
+        cairo_paint(cc);
     } else {
-        cairo_paint_with_alpha(cr, alpha);
+        cairo_paint_with_alpha(cc, alpha);
     }
 }
 

@@ -886,7 +886,7 @@ void cairoDrawAllFallenItems(cairo_t *cr) {
         if (canFallenConsumeStormItem(fallen)) {
             cairo_set_source_surface(cr, fallen->surface,
                 fallen->x, fallen->y - fallen->h);
-            my_cairo_paint_with_alpha(cr,
+            paintCairoContextWithAlpha(cr,
                 (0.01 * (100 - Flags.Transparency)));
 
             fallen->prevx = fallen->x;

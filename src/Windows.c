@@ -122,7 +122,8 @@ int do_sendevent() {
     event.width = mGlobal.StormWindowWidth;
     event.height = mGlobal.StormWindowHeight;
 
-    XSendEvent(mGlobal.display, mGlobal.StormWindow, True, Expose, (XEvent *) &event);
+    XSendEvent(mGlobal.display, mGlobal.StormWindow,
+        True, Expose, (XEvent *) &event);
     return true;
 }
 

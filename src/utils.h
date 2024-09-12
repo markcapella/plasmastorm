@@ -60,7 +60,7 @@ extern Pixel IAllocNamedColor(const char* colorName, Pixel dfltPix);
 extern Pixel AllocNamedColor(const char* colorName, Pixel dfltPix);
 extern void rgba2color(GdkRGBA* c, char** s);
 
-extern void my_cairo_paint_with_alpha(cairo_t* cr, double alpha);
+extern void paintCairoContextWithAlpha(cairo_t* cr, double alpha);
 
 extern void sanelyCheckAndClearDisplayArea(Display* display,
     Window win, int x, int y, int w, int h, int exposures);
