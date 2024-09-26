@@ -18,6 +18,7 @@
 #-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-# 
 */
+#include <ctype.h>
 #include <pthread.h>
 #include <stdbool.h>
 
@@ -212,7 +213,7 @@ bool createTransparentWindow(Display* display,
         return false;
     }
 
-    // Ensure the widget (the window, actually) can take RGBA
+    // Ensure the widget (the window, actually) can take RGBA.
     gtk_widget_set_visual(inputStormWindow,
         gdk_screen_get_rgba_visual(screen));
 
@@ -222,7 +223,22 @@ bool createTransparentWindow(Display* display,
     gtk_widget_set_size_request(GTK_WIDGET(inputStormWindow),
         attr.width, attr.height);
 
+    // Show.
     gtk_widget_show_all(inputStormWindow);
+    GdkWindow* gdkwin = gtk_widget_get_window(
+        GTK_WIDGET(inputStormWindow));
+
+    // Gnome needs this as dock or it snows
+    // on top of things. KDE needs it as not-a-dock,
+    // or it snows on top of things.
+    char* desktop = getenv("XDG_SESSION_DESKTOP");
+    for (char* eachChar = desktop; *eachChar; ++eachChar) {
+        *eachChar = tolower(*eachChar);
+    }
+    if (strstr(desktop, "gnome")) {
+        gdk_window_set_type_hint(gdkwin,
+            GDK_WINDOW_TYPE_HINT_DOCK);
+    }
 
     // Set return values.
     if (outputStormWindow) {
@@ -230,9 +246,9 @@ bool createTransparentWindow(Display* display,
             GTK_WIDGET(inputStormWindow));
     }
     if (x11_window) {
-        *x11_window = gdk_x11_window_get_xid(
-            gtk_widget_get_window(GTK_WIDGET(inputStormWindow)));
-        XResizeWindow(display, *x11_window, attr.width, attr.height);
+        *x11_window = gdk_x11_window_get_xid(gdkwin);
+        XResizeWindow(display, *x11_window,
+            attr.width, attr.height);
         XFlush(display);
     }
     *wantx = 0;

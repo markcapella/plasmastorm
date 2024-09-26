@@ -5,7 +5,7 @@ Type=Application
 StartupNotify=true
 Terminal=false
 
-Exec=plasmastorm 1>$HOME/.plasmastormStdout 2>$HOME/.plasmastormStderr
+Exec=plasmastorm
 Icon=plasmastorm.png
 
 Categories=Game;
