@@ -260,8 +260,7 @@ int updateWindowsList() {
  **/
 Window getActiveX11Window() {
     Window activeWindow = None;
-    getActiveWindowFromXDO(xdo_new_with_opened_display(
-        mGlobal.display, (char*) NULL, 0), &activeWindow);
+    getActiveWindowFromXDO(mGlobal.xdo, &activeWindow);
 
     return activeWindow;
 }

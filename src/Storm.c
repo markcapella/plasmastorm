@@ -132,7 +132,9 @@ int getResourcesShapeCount() {
 }
 
 /** *********************************************************************
- ** This method loads and/or creates stormItem pixmap images.
+ ** This method loads and/or creates stormItem
+ ** pixmap images combined from pre-loaded images
+ * and runtime generated ones.
  **/
 void createCombinedShapesList() {
     // Remove any existing Shape list.
@@ -160,8 +162,10 @@ void createCombinedShapesList() {
     // Then Shapes generated randomly.
     for (int i = 0; i < RANDOM_STORMITEM_COUNT; i++) {
         createRandomStormShape(
-            Flags.ShapeSizeFactor + (Flags.ShapeSizeFactor * drand48()),
-            Flags.ShapeSizeFactor + (Flags.ShapeSizeFactor * drand48()),
+            Flags.ShapeSizeFactor +
+                (Flags.ShapeSizeFactor * drand48()),
+            Flags.ShapeSizeFactor +
+                (Flags.ShapeSizeFactor * drand48()),
             &newShapesList[i + mResourcesShapeCount]);
     }
 

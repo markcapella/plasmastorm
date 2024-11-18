@@ -23,12 +23,6 @@
 #include <X11/xpm.h>
 #include <gtk/gtk.h>
 
-
-extern int iXpmCreatePixmapFromData(Display *display,
-    Drawable d, const char **data,
-    Pixmap *p, Pixmap *s,
-    XpmAttributes *attr, int flop);
-
 extern void xpm_set_color(char **data,
     char ***out, int *lines, const char *color);
 
