@@ -18,6 +18,10 @@ Storms of drifting items: snow, leaves, rain, bubbles & more!
 
 ## Installation.
 
+### Install Pre-reqs.
+
+    sudo apt install git automake libx11-dev libxft-dev libxpm-dev libxt-dev libxext-dev x11proto-dev libxinerama-dev libxtst-dev libxkbcommon-dev libgsl-dev
+
 ### Clone plasmastorm working source folder.
 
     git clone https://github.com/markcapella/plasmastorm
